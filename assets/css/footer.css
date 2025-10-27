@@ -1,0 +1,36 @@
+.bc-footer {
+  background: #B0C4DE;
+  border-top: 1px solid #668AD2;;
+}
+
+.bc-footer__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 0;
+  font-size: 0.9rem; 
+  font-weight: 400;
+  color: #000;
+}
+
+.bc-footer__links {
+  display: flex;
+  gap: 3rem;
+}
+
+.bc-footer__links a {
+  color: #000;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: color 0.2s ease;
+}
+
+.bc-footer__links a:hover {
+  color: #35C6FF;
+}
+
+.bc-footer__lang {
+  font-weight: 500;
+  color: #000;
+}
