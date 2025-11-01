@@ -93,9 +93,10 @@ document.addEventListener("DOMContentLoaded", () => {
       const sortValue = sortSelect.value;
       const sorted = [...reviewCards];
 
-      sorted.sort((a, b) => {
-        const ratingA = a.querySelector(".review-stars").textContent.replace(/☆/g, "").length;
-        const ratingB = b.querySelector(".review-stars").textContent.replace(/☆/g, "").length;
+    sorted.sort((a, b) => {
+      const ratingA = parseFloat(a.querySelector(".review-stars").dataset.rating || 0);
+      const ratingB = parseFloat(b.querySelector(".review-stars").dataset.rating || 0);
+
 
         const parseDate = (str) => {
           const [day, month, year, time] = str.split(/[\s.]+/);
