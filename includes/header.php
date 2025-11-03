@@ -48,7 +48,7 @@ $user_role = $auth['role'] ?? null;
         <?php elseif ($user_role === 'super_admin'): ?>
             <a href="#" class="bc-nav__link">Керування системою</a>
         <?php else: ?>
-            <a href="#" class="bc-nav__link">Пошук</a>
+            <a href="/BumbleCare/pages/search.php" class="bc-nav__link">Пошук</a>
         <?php endif; ?>
     </nav>
 

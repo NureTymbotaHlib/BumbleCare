@@ -4,13 +4,12 @@
 ?>
 
 <main>
-  <!-- HERO -->
 <section class="home-hero">
   <div class="bc-container home-hero__inner">
     <div class="home-hero__left">
       <h1>Замість черги — <span class="c-primary">BumbleCare</span></h1>
       <p>Забудь про черги — запишись до лікаря онлайн за кілька секунд і отримай якісну медичну допомогу поруч із тобою.</p>
-      <a href="#" class="home-cta">ЗНАЙТИ ЛІКАРЯ</a>
+      <a href="/BumbleCare/pages/search.php" class="home-cta">ЗНАЙТИ ЛІКАРЯ</a>
     </div>
     <div class="home-hero__right">
       <img src="/BumbleCare/assets/images/doctors-hero.png" alt="Doctors team">
@@ -18,7 +17,6 @@
   </div>
 </section>
 
-<!-- INFO -->
 <section class="home-info">
   <div class="bc-container home-info__inner">
     <div class="home-info__left">
