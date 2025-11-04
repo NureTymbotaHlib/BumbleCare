@@ -31,65 +31,74 @@ $specialties = $specialties_stmt->fetchAll(PDO::FETCH_COLUMN);
 <main class="search-page">
   <div class="bc-container search-wrapper">
 
-    <form method="GET" id="searchForm" class="search-form">
-      <div class="search-top">
-        <input 
-          type="text" 
-          name="query" 
-          placeholder="Введіть спеціальність або ПІБ лікаря"
-        >
+    <div class="form-block">
+      <form id="searchForm" class="search-form">
+        <div class="search-input-wrapper">
+          <input 
+            type="text" 
+            name="query" 
+            id="searchInput"
+            placeholder="Введіть спеціальність або ПІБ лікаря"
+          >
+          <button type="button" class="btn-clear" id="clearSearch">Скинути</button>
+        </div>
         <button type="submit" class="btn-search">Знайти</button>
-      </div>
+      </form>
 
-      <div class="filter-grid">
-        <div class="filter-col">
-          <label>Спеціальність</label>
-          <select name="specialty" id="specialtySelect">
-            <option value="">Усі</option>
-            <?php foreach ($specialties as $s): ?>
-              <option value="<?= htmlspecialchars($s) ?>"><?= htmlspecialchars($s) ?></option>
-            <?php endforeach; ?>
-          </select>
+      <form id="filterForm" class="filter-form">
+        <div class="filter-grid">
+          <div class="filter-col">
+            <label>Спеціальність</label>
+            <select name="specialty" id="specialtySelect">
+              <option value="">Усі</option>
+              <?php foreach ($specialties as $s): ?>
+                <option value="<?= htmlspecialchars($s) ?>"><?= htmlspecialchars($s) ?></option>
+              <?php endforeach; ?>
+            </select>
+          </div>
+
+          <div class="filter-col">
+            <label>Місто</label>
+            <select name="city" id="citySelect">
+              <option value="">Усі</option>
+              <?php foreach ($cities as $ct): ?>
+                <option value="<?= htmlspecialchars($ct) ?>"><?= htmlspecialchars($ct) ?></option>
+              <?php endforeach; ?>
+            </select>
+          </div>
+
+          <div class="filter-col">
+            <label>Клініка</label>
+            <select name="clinic_id" id="clinicSelect">
+              <option value="">Усі</option>
+              <?php foreach ($clinics as $cl): ?>
+                <option 
+                  value="<?= $cl['clinic_id'] ?>" 
+                  data-city="<?= htmlspecialchars($cl['city']) ?>">
+                  <?= htmlspecialchars($cl['name']) ?>
+                </option>
+              <?php endforeach; ?>
+            </select>
+          </div>
         </div>
 
-        <div class="filter-col">
-          <label>Місто</label>
-          <select name="city" id="citySelect">
-            <option value="">Усі</option>
-            <?php foreach ($cities as $ct): ?>
-              <option value="<?= htmlspecialchars($ct) ?>"><?= htmlspecialchars($ct) ?></option>
-            <?php endforeach; ?>
-          </select>
+        <div class="controls-bar">
+          <div class="buttons-block">
+            <button type="submit" class="btn-apply">Застосувати фільтри</button>
+            <button class="btn-reset">Скинути фільтри</button>
+          </div>
+          <div class="sort-bar">
+            <label>Сортувати:</label>
+            <select name="sort" id="sortSelect">
+              <option value="default">За замовчанням (а-я)</option>
+              <option value="rating">За рейтингом</option>
+              <option value="reviews">За кількістю відгуків</option>
+            </select>
+          </div>
         </div>
+      </form>
 
-        <div class="filter-col">
-          <label>Клініка</label>
-          <select name="clinic_id" id="clinicSelect">
-            <option value="">Усі</option>
-            <?php foreach ($clinics as $cl): ?>
-              <option 
-                value="<?= $cl['clinic_id'] ?>" 
-                data-city="<?= htmlspecialchars($cl['city']) ?>">
-                <?= htmlspecialchars($cl['name']) ?>
-              </option>
-            <?php endforeach; ?>
-          </select>
-        </div>
-      </div>
-
-      <div class="controls-bar">
-        <button type="submit" class="btn-apply">Застосувати фільтри</button>
-        <div class="sort-bar">
-          <label>Сортувати:</label>
-          <select name="sort" id="sortSelect">
-            <option value="default">За замовчанням (а-я)</option>
-            <option value="rating">За рейтингом</option>
-            <option value="reviews">За кількістю відгуків</option>
-          </select>
-        </div>
-      </div>
-    </form>
-
+    </div>         
     <div class="results" id="resultsContainer"></div>
   </div>
 </main>
