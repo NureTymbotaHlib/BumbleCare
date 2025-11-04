@@ -103,6 +103,6 @@ $specialties = $specialties_stmt->fetchAll(PDO::FETCH_COLUMN);
   </div>
 </main>
 
-
 <script src="/BumbleCare/assets/js/search.js"></script>
+<script src="/BumbleCare/assets/js/rating_stars.js"></script>
 <?php include __DIR__ . '/../includes/footer.php'; ?>

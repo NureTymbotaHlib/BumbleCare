@@ -123,13 +123,4 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-
-
-  document.querySelectorAll(".stars-container, .review-stars").forEach(starBlock => {
-    const rating = parseFloat(starBlock.dataset.rating || 0);
-    const percent = Math.min(100, Math.max(0, (rating / 5) * 100));
-    starBlock.style.setProperty("--fill-width", `${percent}%`);
-  });
-
-  
 });

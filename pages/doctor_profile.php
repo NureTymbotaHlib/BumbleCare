@@ -375,5 +375,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image']) && 
 <script src="/BumbleCare/assets/js/doctor_profile.js"></script>
 <script src="/BumbleCare/assets/js/change_password.js"></script>
 <script src="/BumbleCare/assets/js/toggle_password.js"></script>
+<script src="/BumbleCare/assets/js/rating_stars.js"></script>
 
 <?php include __DIR__ . '/../includes/footer.php'; ?>
