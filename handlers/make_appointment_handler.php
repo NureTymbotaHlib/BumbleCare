@@ -63,11 +63,22 @@ if ($action === 'get_slots') {
     }
 
     $result = [];
+    $now = new DateTime('now', new DateTimeZone('Europe/Kyiv'));
+
     foreach ($schedules as $s) {
         $date = $s['work_date'];
         $slots = generateSlots($s['start_time'], $s['end_time']);
 
         foreach ($slots as $slot) {
+            $slotDateTime = DateTime::createFromFormat('Y-m-d H:i', "$date $slot", new DateTimeZone('Europe/Kyiv'));
+            
+            if (!$slotDateTime) {
+                continue;
+            }
+            if ($slotDateTime < $now) {
+                continue;
+            }
+
             $isBusy = in_array($slot, $busy[$date] ?? []);
             $result[$date][] = [
                 'time' => $slot,
@@ -76,6 +87,7 @@ if ($action === 'get_slots') {
         }
     }
 
+    $result = array_filter($result);
     echo json_encode(['slots' => $result]);
     exit;
 }
@@ -106,6 +118,11 @@ if ($action === 'create_appointment') {
     }
 
     $appointment_time = "$date $time:00";
+    
+    if (new DateTime($appointment_time) < new DateTime()) {
+        echo json_encode(['error' => 'past_slot']);
+        exit;
+    }
 
     $check = $pdo->prepare("
         SELECT COUNT(*) FROM appointments
@@ -114,6 +131,16 @@ if ($action === 'create_appointment') {
     $check->execute([$doctor_id, $appointment_time]);
     if ($check->fetchColumn() > 0) {
         echo json_encode(['error' => 'slot_busy']);
+        exit;
+    }
+
+    $activeCheck = $pdo->prepare("
+        SELECT COUNT(*) FROM appointments
+        WHERE doctor_id = ? AND patient_id = ? AND status = 'booked'
+    ");
+    $activeCheck->execute([$doctor_id, $patient_id]);
+    if ($activeCheck->fetchColumn() > 0) {
+        echo json_encode(['error' => 'already_booked']);
         exit;
     }
 

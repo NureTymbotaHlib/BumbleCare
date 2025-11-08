@@ -101,7 +101,7 @@
 }
 
 .schedule-section h2 {
-    margin: 0 0 1rem 0;
+    margin: 0 0 2rem 0;
     font-weight: 600;
     color: #111;
 }
@@ -118,13 +118,13 @@
 	display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 2rem;
+  gap: 3rem;
 }
 
 .day-title {
   font-weight: 600;
   font-size: 1.2rem;
-  margin-bottom: 0.8rem;
+  margin: 0 0 0.8rem 0;
   color: #111;
 }
 

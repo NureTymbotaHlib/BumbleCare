@@ -128,6 +128,12 @@ document.addEventListener("DOMContentLoaded", () => {
           btn.classList.add("busy");
           btn.disabled = true;
           showPopupMessage("Запис успішно створено!", "success");
+        } else if (data.error === "already_booked") {
+          showPopupMessage("У вас уже є активний запис до цього лікаря.", "error");
+        } else if (data.error === "slot_busy") {
+          showPopupMessage("Цей час вже зайнятий.", "error");
+        } else if (data.error === "past_slot") {
+          showPopupMessage("Неможливо записатись у минуле.", "error");
         } else {
           showPopupMessage("Щось пішло не так. Спробуйте ще раз.", "error");
         }
