@@ -12,7 +12,6 @@ document.addEventListener("DOMContentLoaded", () => {
     defaultPlaceholders[i.name] = i.placeholder;
   });
 
-  // Открытие
   if (changeBtn && passwordModal) {
     changeBtn.addEventListener("click", e => {
       e.preventDefault();
@@ -21,7 +20,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Закрытие по крестику
   if (closeBtn) {
     closeBtn.addEventListener("click", () => {
       resetFormState();
@@ -29,7 +27,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Закрытие по клику вне
   passwordModal.addEventListener("click", e => {
     if (e.target === passwordModal) {
       resetFormState();
@@ -37,7 +34,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  //Отправка формы 
   form.addEventListener("submit", e => {
     e.preventDefault();
 
@@ -48,7 +44,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const formData = new FormData(form);
 
-    // Очистка прошлых ошибок и плейсхолдеров
     form.querySelectorAll(".password-input-wrapper").forEach(w => w.classList.remove("error"));
     form.querySelectorAll("input").forEach(i => {
       i.classList.remove("error");
@@ -62,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .then(res => res.json())
       .then(data => {
         if (data.success) {
-          alert("Пароль успішно змінено!");
+          showPopupMessage("Пароль успішно змінено!", "success");
           resetFormState();
           passwordModal.classList.add("hidden");
           return;
@@ -101,10 +96,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         else if (err) {
-          alert(err);
+          showPopupMessage(err, "error");
         }
       })
-      .catch(() => alert("Помилка з'єднання з сервером"));
+      .catch(() => showPopupMessage("Помилка з'єднання з сервером", "error"));
   });
 
   function resetFormState() {

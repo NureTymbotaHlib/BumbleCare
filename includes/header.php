@@ -25,6 +25,7 @@ $user_role = $auth['role'] ?? null;
     <?php endif; ?>
 
     <link rel="stylesheet" href="/BumbleCare/assets/css/footer.css">
+    <script src="/BumbleCare/assets/js/result_popup.js"></script>
 </head>
 <body>
 

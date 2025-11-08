@@ -30,11 +30,12 @@ document.addEventListener("DOMContentLoaded", () => {
           if (data.success) {
             inputs.forEach(i => (originalValues[i.name] = i.value));
             resetEditState();
+            showPopupMessage("Дані успішно збережено!", "success");
           } else {
-            alert(data.error || "Помилка збереження");
+            showPopupMessage(data.error || "Помилка збереження", "error");
           }
         })
-        .catch(() => alert("Помилка запиту"));
+        .catch(() => showPopupMessage("Помилка запиту", "error"));
     }
   });
 

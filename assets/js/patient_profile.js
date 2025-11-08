@@ -49,9 +49,12 @@ document.addEventListener("DOMContentLoaded", () => {
             modal.classList.add("hidden");
             inputs.forEach(i => (originalValues[i.name] = i.value));
             resetEditState();
-          } else alert(data.error || "Помилка збереження");
+            showPopupMessage("Дані успішно збережено!", "success");
+          } else {
+            showPopupMessage(data.error || "Помилка збереження", "error");
+          }
         })
-        .catch(() => alert("Помилка запиту"));
+        .catch(() => showPopupMessage("Помилка запиту", "error"));
     }
   });
 

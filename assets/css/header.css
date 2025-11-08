@@ -91,3 +91,34 @@ body {
 .bc-login-btn:hover { 
   background: #5482C4; 
 }
+
+/* Повідомлення результату дії (result_popup.js)*/
+.popup-msg {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+  background: #C7D7FD;
+  color: #111;
+  font-weight: 500;
+  padding: 0.8rem 1.6rem;
+  border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 9999;
+}
+
+.popup-msg.visible {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}
+
+.popup-msg.success {
+  background: #a9e6b4;
+}
+
+.popup-msg.error {
+  background: rgba(186, 97, 97, 0.8);
+  color: #111;
+}
