@@ -128,6 +128,9 @@ document.addEventListener("DOMContentLoaded", () => {
           btn.classList.add("busy");
           btn.disabled = true;
           showPopupMessage("Запис успішно створено!", "success");
+          setTimeout(() => {
+            window.location.href = "/BumbleCare/pages/patient_appointments.php";
+          }, 1500);
         } else if (data.error === "already_booked") {
           showPopupMessage("У вас уже є активний запис до цього лікаря.", "error");
         } else if (data.error === "slot_busy") {

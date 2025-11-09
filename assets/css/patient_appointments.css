@@ -1,0 +1,244 @@
+.appointments-page {
+  background: #B0C4DE;
+  min-height: calc(100vh - 150px);
+  padding: 3rem 0;
+  font-family: 'Raleway', sans-serif;
+}
+
+.patient-appointments-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  width: 85%;
+  max-width: 1200px;
+}
+
+.back-block {
+	display: flex;
+  justify-content: flex-end;
+	width: 100%;
+}
+
+.btn-back {
+	background: #668AD2;
+  color: #111;
+  padding: 0.5rem 1.2rem;
+	font-size: 1rem;
+	border: none;
+  border-radius: 999px;
+  font-weight: 500;
+	cursor: pointer;
+  transition: background 0.2s
+
+}
+
+.btn-back:hover {
+	background: #5482C4;
+}
+
+.appointment-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #663399;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  width: 100%;
+}
+
+.appointment-left {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.appointment-info {
+	display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.appointment-info p {
+    margin: 0;
+}
+
+.doctor-name {
+    font-size: 1.3rem;
+    color: #000;
+}
+
+.clinic,
+.appointment-date,
+.appointment-time {
+    font-size: 1rem;
+    color: #111;
+}
+
+.appointment-right {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  align-items: flex-end;
+}
+
+.doctor-avatar {
+	width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #000;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.status {
+  font-weight: 600;
+  font-size: 1.1rem;
+	margin: 0;
+}
+
+.planned {
+  background: rgba(124, 98, 178, 0.39);
+}
+.completed {
+  background: rgba(104, 119, 124, 0.39);
+}
+.cancelled {
+  background: rgba(186, 97, 97, 0.45);
+}
+.missed {
+  background: rgba(200, 200, 200, 0.25);
+}
+
+.btn-cancel {
+  background: rgba(186, 97, 97, 0.8);
+  color: #111;
+  padding: 0.5rem 1.2rem;
+	font-size: 1rem;
+  border: none;
+  border-radius: 999px;
+	font-weight: 500;
+  cursor: pointer;
+	transition: background 0.2s;
+}
+
+.btn-cancel:hover {
+	background: rgba(166, 77, 77, 0.8);
+}
+
+.btn-review {
+	background: #668AD2;
+  color: #111;
+  padding: 0.5rem 1.2rem;
+	font-size: 1rem;
+	border: none;
+  border-radius: 999px;
+  font-weight: 500;
+	cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-review:hover {
+	background: #5482C4;
+}
+
+/* Модалка */
+.modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1000;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal .modal-content {
+	display: flex;
+  flex-direction: column;
+	text-align: center;
+  gap: 1.5rem;
+  position: relative;
+  width: 560px;
+  max-width: 90%;
+  padding: 2rem;
+  background: #B0C4DE;
+  border: 1px solid #668AD2;
+  border-radius: 1rem;
+  box-shadow:
+    inset 0 2px 5px rgba(124, 98, 178, 0.39),
+    inset 0 -2px 5px rgba(0, 0, 0, 0.08),
+    0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.modal .modal-content h2 {
+  text-align: center;
+  margin: 0.8rem 0 0 0;
+  color: #000;
+  font-weight: 600;
+  font-size: 1.8rem;
+}
+
+.modal .modal-content p {
+  color: #000;
+  font-size: 1.1rem;
+  line-height: 1.5;
+	margin: 0;
+}
+
+.modal .close-btn {
+  position: absolute;
+  top: 0.8rem;
+  right: 1rem;
+  font-size: 1.8rem;
+  color: #000;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.modal .close-btn:hover {
+  opacity: 1;
+}
+
+.modal .modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+}
+
+.modal .btn {
+  border: none;
+  border-radius: 999px;
+  padding: 0.8rem 1.6rem;
+	color: #000;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.modal .btn.yes {
+  background: #668AD2;
+}
+
+.modal .btn.yes:hover {
+  background: #5482C4;
+}
+
+.modal .btn.no {
+  background: rgba(186, 97, 97, 0.8);
+}
+
+.modal .btn.no:hover {
+  background: rgba(166, 77, 77, 0.8);
+}
