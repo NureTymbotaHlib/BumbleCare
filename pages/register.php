@@ -78,14 +78,6 @@
 
         </div>
 
-        <div class="form-options">
-          <div class="remember">
-            <input type="checkbox" id="remember" name="remember">
-            <label for="remember">Запам’ятати мене</label>
-          </div>
-          <a href="#" class="forgot">Видалити пароль</a>
-        </div>
-
         <button type="submit" class="btn-register-main">Зареєструватися</button>
       </form>
       <?php

@@ -45,11 +45,7 @@
         </div>
 
         <div class="form-options"> 
-          <div class="remember">
-            <input type="checkbox" id="remember" name="remember">
-            <label for="remember">Запам’ятати мене</label>
-          </div>
-          <a href="#" class="forgot">Видалити пароль</a>
+          <button type="button" class="forgot-link">Забули пароль?</button>
         </div>
 
         <button type="submit" class="btn-login-main">Увійти</button>
@@ -68,6 +64,30 @@
         </p>
 
       </form>
+
+      <!-- POPUP ВІДНОВЛЕННЯ ПАРОЛЮ -->
+      <div id="resetModal" class="modal hidden">
+        <div class="modal-content">
+          <span class="close-btn">&times;</span>
+          <h2>Відновлення паролю</h2>
+
+          <p>Введіть свою електронну пошту, щоб отримати посилання для відновлення паролю.</p>
+
+          <input 
+            type="email" 
+            id="resetEmail" 
+            placeholder="youremail@gmail.com" 
+            required
+            class="modal-input"
+          >
+
+          <div class="modal-actions">
+            <button id="sendResetLink" class="btn yes">Надіслати</button>
+            <button id="closeResetModal" class="btn no">Скасувати</button>
+          </div>
+        </div>
+      </div>
+
       <?php
       unset($_SESSION['error'], $_SESSION['form_data']);
       ?>
@@ -78,6 +98,7 @@
     </div>
   </div>
 </main>
+<script src="/BumbleCare/assets/js/reset_password-modal.js"></script>
 <script src="/BumbleCare/assets/js/toggle_password.js"></script>
 
 <?php include __DIR__.'/../includes/footer.php'; ?>
