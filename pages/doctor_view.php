@@ -41,6 +41,20 @@ if (!empty($doctor['date_of_birth'])) {
   $age = date_diff(date_create($doctor['date_of_birth']), date_create('today'))->y;
 }
 
+$review_sql = "
+SELECT 
+  r.review_id, r.rating, r.comment, r.created_at,
+  u.full_name, u.profile_image
+FROM reviews r
+JOIN patients p ON r.patient_id = p.patient_id
+JOIN users u ON p.user_id = u.user_id
+WHERE r.doctor_id = ?
+ORDER BY r.created_at DESC
+";
+$review_stmt = $pdo->prepare($review_sql);
+$review_stmt->execute([$doctor_id]);
+$reviews = $review_stmt->fetchAll(PDO::FETCH_ASSOC);
+
 $page_css = 'doctor_view.css';
 include __DIR__ . '/../includes/header.php';
 ?>
@@ -79,8 +93,53 @@ include __DIR__ . '/../includes/header.php';
       <p><?= nl2br(htmlspecialchars($doctor['about'] ?? 'Інформація відсутня')) ?></p>
     </div>
 
+    <div class="doctor-reviews-section">
+      <div class="reviews-header">
+        <h2>Відгуки пацієнтів</h2>
+
+        <form class="sort-form" onsubmit="return false;">
+          <label for="sort">Сортувати:</label>
+          <select id="sort" name="sort">
+            <option value="date_desc">Новіші спочатку</option>
+            <option value="date_asc">Старіші спочатку</option>
+            <option value="rating_desc">Від більшої оцінки</option>
+            <option value="rating_asc">Від меншої оцінки</option>
+          </select>
+        </form>
+      </div>
+
+      <div id="reviews-container">
+        <?php if ($reviews && count($reviews) > 0): ?>
+          <?php foreach ($reviews as $review): ?>
+            <div class="review-card">
+              <div class="review-header">
+                <div class="review-user">
+                  <img src="<?= htmlspecialchars($review['profile_image'] ?? '/BumbleCare/assets/images/default_avatar.png') ?>" alt="Фото" class="review-avatar">
+                  <div class="review-meta">
+                    <p class="review-name"><?= htmlspecialchars($review['full_name']) ?></p>
+                    <p class="review-date"><?= date('d.m.y H:i', strtotime($review['created_at'])) ?></p>
+                  </div>
+                </div>
+                <div class="doctor-rating">
+                  <span class="rating-number"><?= round($review['rating'], 1) ?></span>
+                  <div class="rating-stars" data-rating="<?= round($review['rating'], 1) ?>"></div>
+                </div>
+              </div>
+
+              <div class="review-body">
+                <p><?= htmlspecialchars($review['comment']) ?></p>
+              </div>
+            </div>
+          <?php endforeach; ?>
+        <?php else: ?>
+          <p class="no-reviews">У даного лікаря відгуків поки що немає.</p>
+        <?php endif; ?>
+      </div>
+    </div>
+
   </div>
 </main>
 
 <script src="/BumbleCare/assets/js/rating_stars.js"></script>
+<script src="/BumbleCare/assets/js/doctor_view.js"></script>
 <?php include __DIR__ . '/../includes/footer.php'; ?>
