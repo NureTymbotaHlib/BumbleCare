@@ -17,11 +17,15 @@ $stmt = $pdo->prepare("
     u.full_name AS doctor_name,
     u.profile_image,
     c.name AS clinic_name,
-    c.city AS clinic_city
+    c.city AS clinic_city,
+    r.review_id,
+    r.rating,
+    r.comment AS review_comment
   FROM appointments a
   LEFT JOIN doctors d ON a.doctor_id = d.doctor_id
   LEFT JOIN users u ON d.user_id = u.user_id
   LEFT JOIN clinics c ON d.clinic_id = c.clinic_id
+  LEFT JOIN reviews r ON r.appointment_id = a.appointment_id
   WHERE a.patient_id = (
       SELECT patient_id FROM patients WHERE user_id = ?
   )
@@ -101,13 +105,23 @@ $now = new DateTime('now', new DateTimeZone('Europe/Kyiv'));
 								Скасувати бронювання
 							</button>
           <?php elseif ($status === 'completed'): ?>
-            <button
-							class="btn-review" 
-							data-id="<?= $a['appointment_id'] ?>" 
-							data-doctor="<?= $a['doctor_id'] ?>"
-						>
-							Залишити відгук
-						</button>
+            <?php if (!empty($a['review_id'])): ?>
+              <button
+                class="btn-view-review"
+                data-rating="<?= htmlspecialchars($a['rating']) ?>"
+                data-comment="<?= htmlspecialchars($a['review_comment']) ?>"
+              >
+                Переглянути відгук
+              </button>
+            <?php else: ?>
+              <button
+                class="btn-review"
+                data-id="<?= $a['appointment_id'] ?>" 
+                data-doctor="<?= $a['doctor_id'] ?>"
+              >
+                Залишити відгук
+              </button>
+            <?php endif; ?>
           <?php endif; ?>
         </div>
       </div>
@@ -131,7 +145,56 @@ $now = new DateTime('now', new DateTimeZone('Europe/Kyiv'));
 		</div>
 	</div>
 
+  <!-- МОДАЛЬНЕ ВІКНО ДОДАВАННЯ ВІДГУКУ -->
+  <div id="reviewModal" class="modal hidden">
+    <div class="modal-content">
+      <span class="close-btn">&times;</span>
+      <h2>Залишити відгук</h2>
+
+      <form id="reviewForm">
+        <input type="hidden" name="appointment_id" id="review_appointment_id">
+        <input type="hidden" name="doctor_id" id="review_doctor_id">
+
+        <div class="rating-block">
+            <label>Оцініть прийом:</label>
+          <div class="rating-select" id="starContainer">
+            <?php for ($i = 1; $i <= 5; $i++): ?>
+              <span class="star" data-value="<?= $i ?>">★</span>
+            <?php endfor; ?>
+          </div>
+        </div>
+        
+        <input type="hidden" name="rating" id="review_rating" value="0">
+
+        <div class="comment-block">
+          <label for="review_comment">Ваш відгук:</label>
+          <textarea id="review_comment" name="comment" placeholder="Напишіть свій відгук..." required></textarea>
+        </div>
+        
+        <div class="modal-actions">
+          <button type="submit" class="btn yes">Надіслати</button>
+          <button type="button" class="btn no" id="cancelReview">Скасувати</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- МОДАЛЬНЕ ВІКНО ПЕРЕГЛЯДУ ВІДГУКУ -->
+  <div id="viewReviewModal" class="modal hidden">
+    <div class="modal-content">
+      <span class="close-btn">&times;</span>
+      <h2> Ваш відгук</h2>
+      <div class="doctor-rating">
+        <span class="rating-number" id="viewRatingNumber"></span>
+        <div class="rating-stars" id="viewRatingStars" data-rating="0"></div>
+      </div>
+      <p id="viewReviewComment" class="review-comment"></p>
+    </div>
+  </div>
+
+
 </main>
 
 <script src="/BumbleCare/assets/js/patient_appointments.js"></script>
+<script src="/BumbleCare/assets/js/rating_stars.js"></script>
 <?php include __DIR__ . '/../includes/footer.php'; ?>

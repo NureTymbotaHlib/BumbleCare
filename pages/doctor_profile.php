@@ -260,9 +260,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image']) && 
 
       <div class="reviews-header">
         <div class="average-rating">
+          <p>Ваш середній рейтинг:</p>
           <span class="rating-number"><?= htmlspecialchars($avg_rating) ?></span>
-          <div class="stars-container" data-rating="<?= htmlspecialchars($avg_rating) ?>"></div>
-
+          <div class="rating-stars" data-rating="<?= htmlspecialchars($avg_rating) ?>"></div>
           <span class="rating-count">(<?= $total_reviews ?> відгуків)</span>
         </div>
 
@@ -290,8 +290,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image']) && 
                       <p class="review-date"><?= date('d.m.y H:i', strtotime($review['created_at'])) ?></p>
                     </div>
                   </div>
-                  <div class="review-stars" data-rating="<?= htmlspecialchars($review['rating']) ?>"></div>
-
+                  <div class="doctor-rating">
+                    <span class="rating-number"><?= round($review['rating'], 1) ?></span>
+                    <div class="rating-stars" data-rating="<?= round($review['rating'], 1) ?>"></div>
+                  </div>
                 </div>
 
                 <div class="review-body">

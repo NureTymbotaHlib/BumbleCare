@@ -133,12 +133,20 @@ if ($action === 'create_appointment') {
         echo json_encode(['error' => 'slot_busy']);
         exit;
     }
+   
+    $nowKyiv = new DateTime('now', new DateTimeZone('Europe/Kyiv'));
+    $currentTime = $nowKyiv->format('Y-m-d H:i:s');
 
     $activeCheck = $pdo->prepare("
-        SELECT COUNT(*) FROM appointments
-        WHERE doctor_id = ? AND patient_id = ? AND status = 'booked'
+        SELECT COUNT(*) 
+        FROM appointments
+        WHERE doctor_id = ? 
+        AND patient_id = ? 
+        AND status = 'booked'
+        AND appointment_time > ?
     ");
-    $activeCheck->execute([$doctor_id, $patient_id]);
+    $activeCheck->execute([$doctor_id, $patient_id, $currentTime]);
+
     if ($activeCheck->fetchColumn() > 0) {
         echo json_encode(['error' => 'already_booked']);
         exit;

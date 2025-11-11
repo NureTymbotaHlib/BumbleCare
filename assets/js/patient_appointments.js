@@ -69,12 +69,104 @@ document.addEventListener("DOMContentLoaded", () => {
     modal.classList.add("hidden");
   }
 
+/* Залишити відгук  */
+  const reviewModal = document.getElementById("reviewModal");
+  const reviewForm = document.getElementById("reviewForm");
+  const closeReviewBtn = reviewModal ? reviewModal.querySelector(".close-btn") : null;
+  const cancelReviewBtn = document.getElementById("cancelReview");
+  const stars = reviewModal ? reviewModal.querySelectorAll("#starContainer .star") : [];
+
+  let selectedRating = 0;
+
   reviewButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
       const apptId = btn.dataset.id;
       const doctorId = btn.dataset.doctor;
-      window.location.href = `/BumbleCare/pages/leave_review.php?appointment_id=${apptId}&doctor_id=${doctorId}`;
+
+      document.getElementById("review_appointment_id").value = apptId;
+      document.getElementById("review_doctor_id").value = doctorId;
+      document.getElementById("review_comment").value = "";
+      document.getElementById("review_rating").value = 0;
+
+      selectedRating = 0;
+      stars.forEach((s) => (s.style.color = "#aaa"));
+      openModal(reviewModal);
     });
   });
+
+  stars.forEach((star) => {
+    star.addEventListener("click", () => {
+      selectedRating = parseInt(star.dataset.value);
+      document.getElementById("review_rating").value = selectedRating;
+      stars.forEach((s) => (s.style.color = s.dataset.value <= selectedRating ? "#FFD700" : "#aaa"));
+    });
+  });
+
+  if (closeReviewBtn) closeReviewBtn.addEventListener("click", () => closeModal(reviewModal));
+  if (cancelReviewBtn) cancelReviewBtn.addEventListener("click", () => closeModal(reviewModal));
+  if (reviewModal) {
+    reviewModal.addEventListener("click", (e) => {
+      if (e.target === reviewModal) closeModal(reviewModal);
+    });
+  }
+
+  if (reviewForm) {
+    reviewForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(reviewForm);
+      if (formData.get("rating") === "0") {
+        showPopupMessage("Будь ласка, оберіть оцінку!", "error");
+        return;
+      }
+
+      fetch("/BumbleCare/handlers/add_review.php", {
+        method: "POST",
+        body: formData,
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            showPopupMessage("Ваш відгук успішно додано!", "success");
+            closeModal(reviewModal);
+            setTimeout(() => window.location.reload(), 1000);
+          } else {
+            showPopupMessage(data.message || "Помилка при додаванні відгуку", "error");
+          }
+        })
+        .catch(() => {
+          showPopupMessage("Помилка з'єднання з сервером", "error");
+        });
+    });
+  }
+  
+  /* Переглянути відгук  */
+  const viewReviewModal = document.getElementById("viewReviewModal");
+  const closeViewBtn = viewReviewModal ? viewReviewModal.querySelector(".close-btn") : null;
+  const viewReviewButtons = document.querySelectorAll(".btn-view-review");
+
+  viewReviewButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const rating = parseFloat(btn.dataset.rating) || 0;
+      const comment = btn.dataset.comment || "";
+
+      document.getElementById("viewRatingNumber").textContent = rating.toFixed(1);
+      const starsBlock = document.getElementById("viewRatingStars");
+      starsBlock.dataset.rating = rating;
+
+      document.getElementById("viewReviewComment").textContent = comment;
+
+      if (typeof renderStars === "function") renderStars();
+
+      openModal(viewReviewModal);
+    });
+  });
+
+  if (closeViewBtn) closeViewBtn.addEventListener("click", () => closeModal(viewReviewModal));
+  if (viewReviewModal) {
+    viewReviewModal.addEventListener("click", (e) => {
+      if (e.target === viewReviewModal) closeModal(viewReviewModal);
+    });
+  }
   
 });

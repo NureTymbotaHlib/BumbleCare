@@ -1,0 +1,145 @@
+.reviews-page {
+  background: #B0C4DE;
+  min-height: calc(100vh - 150px);
+  padding: 3rem 0;
+  font-family: 'Raleway', sans-serif;
+}
+
+.reviews-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  width: 85%;
+  max-width: 1200px;
+}
+
+.back-block {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.btn-back {
+  background: #668AD2;
+  color: #111;
+  padding: 0.5rem 1.2rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 999px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-back:hover {
+  background: #5482C4;
+}
+
+.review-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #663399;
+  border-radius: 16px;
+  padding: 2rem;
+  width: 100%;
+  background: rgba(124, 98, 178, 0.25);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.review-left {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+	max-width: 45%;
+}
+
+.review-info {
+	display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.review-info p {
+    margin: 0;
+}
+
+.doctor-name {
+    font-size: 1.3rem;
+    color: #000;
+}
+
+.clinic,
+.review-date,
+.specialty {
+    font-size: 1rem;
+    color: #111;
+}
+
+.doctor-avatar {
+	width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #000;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.review-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1rem;
+  width: 45%;
+}
+
+.comment {
+	margin: 0;
+  background: #C7D7FD;
+  border-radius: 0.5rem;
+  padding: 0.8rem;
+  font-size: 1rem;
+  color: #111;
+  width: 100%;
+  line-height: 1.6;
+	text-align: justify;
+}
+
+.doctor-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.rating-number {
+  font-weight: 400;
+  font-size: 1.4rem;
+  color: #333;
+}
+
+.rating-stars {
+  position: relative;
+  display: inline-block;
+  font-size: 1.8rem;
+}
+
+.rating-stars::before {
+  content: "★★★★★";
+  color: transparent;
+  -webkit-text-stroke: 0.6px #111;
+}
+
+.rating-stars::after {
+  content: "★★★★★";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--fill-width, 0%);
+  overflow: hidden;
+  color: #FFD700;
+  -webkit-text-stroke: 0.6px #111;
+  transition: width 0.4s ease;
+}

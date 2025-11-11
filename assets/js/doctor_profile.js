@@ -83,7 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
 
-  // СОРТИРОВКА ОТЗЫВОВ
+  // сортування відгуків
   const sortSelect = document.getElementById("sort");
   const reviewsContainer = document.getElementById("reviews-container");
 
@@ -95,8 +95,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const sorted = [...reviewCards];
 
     sorted.sort((a, b) => {
-      const ratingA = parseFloat(a.querySelector(".review-stars").dataset.rating || 0);
-      const ratingB = parseFloat(b.querySelector(".review-stars").dataset.rating || 0);
+      const ratingA = parseFloat(a.querySelector(".rating-stars").dataset.rating || 0);
+      const ratingB = parseFloat(b.querySelector(".rating-stars").dataset.rating || 0);
 
 
         const parseDate = (str) => {

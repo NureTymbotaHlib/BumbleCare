@@ -129,7 +129,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image']) && 
         <img src="/BumbleCare/assets/icons/myrecords.png" alt="" style="margin-left: 10px">
         <span>Мої записи</span>
       </a>
-      <a href="patient_feedbacks.php" class="profile-card">
+      <a href="patient_reviews.php" class="profile-card">
         <img src="/BumbleCare/assets/icons/myfeedbacks.png" alt="">
         <span>Мої відгуки</span>
       </a>
