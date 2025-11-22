@@ -1,0 +1,269 @@
+.doctor-start-page {
+  background: #B0C4DE;
+  min-height: calc(100vh - 150px);
+  padding: 3rem 0;
+  font-family: 'Raleway', sans-serif;
+}
+
+.doctor-start-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 85%;
+  max-width: 1200px;
+}
+
+.appointment-header {
+  width: 100%;
+  background: rgba(124, 98, 178, 0.39);
+  border: 1px solid #663399;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  display: flex;
+  justify-content: space-between;
+}
+
+.patient-info-block {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.patient-avatar {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #000;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.patient-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+	align-items: flex-start;
+  gap: 1rem;
+}
+
+.patient-info p {
+  margin: 0;
+}
+
+.patient-name {
+  font-size: 1.5rem;
+  color: #000;
+}
+
+.appointment-date,
+.appointment-time {
+	font-size: 1.1rem;
+	color: #111;
+}
+
+.btn-back {
+  background: #668AD2;
+  color: #111;
+  padding: 0.5rem 1.2rem;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+
+.btn-back:hover {
+  background: #5482C4;
+}
+
+.appointment-form {
+  width: 100%;
+  background: rgba(124, 98, 178, 0.39);
+  border: 1px solid #663399;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.form-section h3 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #111;
+}
+
+.input,
+.textarea {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border-radius: 0.6rem;
+  border: 1px solid #668AD2;
+  background: #C7D7FD;
+  font-size: 1rem;
+  color: #111;
+  transition: border-color 0.2s ease;
+}
+
+.input:focus,
+.textarea:focus {
+  outline: none;
+  border-color: #5482C4;
+}
+
+.textarea {
+  min-height: 120px;
+	resize: none;
+	font-family: inherit;
+	text-align: justify;
+  scrollbar-gutter: stable;
+}
+
+.textarea::-webkit-scrollbar,
+.textarea::-webkit-scrollbar-thumb,
+.textarea::-webkit-scrollbar-track {
+  cursor: default;
+}
+
+.textarea::-webkit-scrollbar {
+  width: 10px;
+  border-radius: 10px;
+}
+
+.textarea::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+
+.textarea::-webkit-scrollbar-thumb {
+  background-color: rgba(102, 138, 210, 0.8);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.textarea::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(84, 130, 196, 0.9);
+}
+
+.btn-finish {
+  background: #668AD2;
+  color: #111;
+  padding: 0.9rem;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 999px;
+  font-weight: 500;
+  cursor: pointer;
+  width: 100%;
+  align-self: center;
+  transition: background 0.2s ease;
+}
+
+.btn-finish:hover {
+  background: #5482C4;
+}
+
+.modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1000;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal .modal-content {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  gap: 1.5rem;
+  position: relative;
+  width: 760px;
+  max-width: 90%;
+  padding: 2rem;
+  background: #B0C4DE;
+  border: 1px solid #668AD2;
+  border-radius: 1rem;
+  box-shadow:
+    inset 0 2px 5px rgba(124, 98, 178, 0.39),
+    inset 0 -2px 5px rgba(0,0,0,0.08),
+    0 2px 8px rgba(0,0,0,0.04);
+}
+
+.modal .modal-content h2 {
+  margin: 0.8rem 0 0 0;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #000;
+}
+
+.modal .modal-content p {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #000;
+  line-height: 1.5;
+}
+
+.modal .close-btn {
+  position: absolute;
+  top: 0.8rem;
+  right: 1rem;
+  font-size: 1.8rem;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: 0.2s ease;
+}
+
+.modal .close-btn:hover {
+  opacity: 1;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+}
+
+.modal .btn {
+  border: none;
+  border-radius: 999px;
+  padding: 0.8rem 1.6rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+	color: #000;
+  transition: background 0.2s ease;
+}
+
+.modal .btn.yes {
+  background: #668AD2;
+}
+
+.modal .btn.yes:hover {
+  background: #5482C4;
+}
+
+.modal .btn.no {
+  background: rgba(186, 97, 97, 0.8);
+}
+
+.modal .btn.no:hover {
+  background: rgba(166, 77, 77, 0.8);
+}
