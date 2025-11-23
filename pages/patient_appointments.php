@@ -72,6 +72,9 @@ $now = new DateTime('now', new DateTimeZone('Europe/Kyiv'));
         } elseif ($status === 'cancelled') {
           $cardClass = 'cancelled';
           $label = 'Скасовано';
+        } elseif ($status === 'cancelled_by_doctor') {
+          $cardClass = 'cancelled';
+          $label = 'Скасовано лікарем';
         } elseif ($status === 'completed') {
           $cardClass = 'completed';
           $label = 'Завершено';

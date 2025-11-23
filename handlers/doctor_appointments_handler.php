@@ -60,7 +60,7 @@ foreach ($result as $a) {
     $dbStatus = $a['status'];
     $virtual  = null;
 
-    if ($dbStatus === 'cancelled') continue;
+    if ($dbStatus === 'cancelled' || $dbStatus === 'cancelled_by_doctor') continue;
 
     if ($dbStatus === 'booked' && $apptTime >= $today && $endTime >= $now) {
         $virtual = 'planned';

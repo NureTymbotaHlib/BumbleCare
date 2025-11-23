@@ -15,7 +15,6 @@ if ($action === 'check_auth') {
     exit;
 }
 
-// Отримання слотів для лікаря
 if ($action === 'get_slots') {
     $doctor_id = $_GET['doctor_id'] ?? null;
 
@@ -51,9 +50,31 @@ if ($action === 'get_slots') {
         $busy[$b['work_date']][] = $b['start_time'];
     }
 
+    function roundTimeToNextSlot($time)
+    {
+        list($h, $m) = explode(':', $time);
+        $h = (int)$h;
+        $m = (int)$m;
+
+        if ($m == 0 || $m == 20 || $m == 40) {
+            return sprintf("%02d:%02d", $h, $m);
+        }
+
+        if ($m < 20)      $m = 20;
+        else if ($m < 40) $m = 40;
+        else {
+            $m = 0;
+            $h = ($h + 1) % 24;
+        }
+
+        return sprintf("%02d:%02d", $h, $m);
+    }
+
     function generateSlots($start, $end) {
         $slots = [];
-        $cur = strtotime($start);
+        $roundedStart = roundTimeToNextSlot($start);
+        list($h, $m) = explode(':', $roundedStart);
+        $cur = strtotime("$h:$m");
         $endT = strtotime($end);
         while ($cur + 20 * 60 <= $endT) {
             $slots[] = date('H:i', $cur);
@@ -92,7 +113,6 @@ if ($action === 'get_slots') {
     exit;
 }
 
-// Створення запису
 if ($action === 'create_appointment') {
     if (!$isLoggedIn || $user_role !== 'patient') {
         echo json_encode(['error' => 'Користувач не авторизований']);

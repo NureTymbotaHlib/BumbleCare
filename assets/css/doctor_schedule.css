@@ -1,0 +1,262 @@
+.schedule-page {
+  background: #B0C4DE;
+  min-height: calc(100vh - 150px);
+  padding: 3rem 0;
+  font-family: 'Raleway', sans-serif;
+}
+
+.schedule-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 85%;
+  margin: auto;
+}
+
+.doctor-card {
+  background: rgba(124,98,178,0.39);
+  border: 1px solid #663399;
+  border-radius: 16px;
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.doctor-avatar {
+  width: 180px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 2rem;
+  border: 1px solid #000;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.doctor-info {
+  display: flex;
+  flex-direction: column;
+	justify-content: center;
+  align-items: flex-start;
+  gap: 0.7rem;
+}
+
+.doctor-info p {
+	margin: 0;
+}
+
+.doctor-name {
+  font-size: 1.5rem;
+  color: #000;
+	font-weight: 600;
+}
+
+.doctor-specialty,
+.doctor-clinic {
+	font-size: 1.1rem;
+	color: #111;
+}
+
+.add-interval {
+  background: rgba(124,98,178,0.39);
+  border: 1px solid #663399;
+  border-radius: 16px;
+  padding: 2rem;
+}
+
+
+.add-interval h2,
+.slots-section h2 {
+	margin: 0 0 2rem 0;
+  font-weight: 600;
+  color: #111;
+}
+
+.interval-form {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.interval-form label {
+	font-size: 1.1rem;
+	color: #111;
+}
+
+.interval-form input {
+  padding: 0.7rem;
+  border-radius: 0.5rem;
+  border: 1px solid #668AD2;
+  background: #C7D7FD;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.interval-form input:focus {
+    border-color: #5482C4;
+    outline: none;
+}
+
+.add-btn {
+  padding: 0.6rem 1.3rem;
+  border-radius: 999px;
+  border: none;
+  background: #668AD2;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #111;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+
+.add-btn:hover {
+  background: #5482C4;
+}
+
+.slots-section {
+  background: rgba(124,98,178,0.39);
+  border: 1px solid #663399;
+  border-radius: 16px;
+  padding: 2rem;
+}
+
+
+.slots-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 3rem;
+}
+
+.day-title {
+	font-weight: 600;
+  font-size: 1.2rem;
+  margin: 0 0 0.8rem 0;
+  color: #111;
+}
+
+.slots-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.slot-btn {
+	padding: 0.6rem 1.2rem;
+  border-radius: 10px;
+  font-weight: 500;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  color: #111;
+}
+
+.slot-btn.free {
+  background: #668AD2;
+}
+
+.slot-btn.free:hover {
+  background: #5482C4;
+}
+
+.slot-btn.busy {
+  background: rgba(186,97,97,0.8);
+}
+
+
+.modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1000;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal .modal-content {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  gap: 1.5rem;
+  position: relative;
+  width: 760px;
+  max-width: 90%;
+  padding: 2rem;
+  background: #B0C4DE;
+  border: 1px solid #668AD2;
+  border-radius: 1rem;
+  box-shadow:
+    inset 0 2px 5px rgba(124, 98, 178, 0.39),
+    inset 0 -2px 5px rgba(0,0,0,0.08),
+    0 2px 8px rgba(0,0,0,0.04);
+}
+
+.modal .modal-content h2 {
+  margin: 0.8rem 0 0 0;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #000;
+}
+
+.modal .modal-content p {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #000;
+  line-height: 1.5;
+}
+
+.modal .close-btn {
+  position: absolute;
+  top: 0.8rem;
+  right: 1rem;
+  font-size: 1.8rem;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: 0.2s ease;
+}
+
+.modal .close-btn:hover {
+  opacity: 1;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+}
+
+.modal .btn {
+  border: none;
+  border-radius: 999px;
+  padding: 0.8rem 1.6rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+	color: #000;
+  transition: background 0.2s ease;
+}
+
+.modal .btn.yes {
+  background: #668AD2;
+}
+
+.modal .btn.yes:hover {
+  background: #5482C4;
+}
+
+.modal .btn.no {
+  background: rgba(186, 97, 97, 0.8);
+}
+
+.modal .btn.no:hover {
+  background: rgba(166, 77, 77, 0.8);
+}
