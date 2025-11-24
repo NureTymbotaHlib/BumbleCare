@@ -31,7 +31,7 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 1rem 0;
-  gap: 3rem;
+  gap: 5rem;
 }
 
 .bc-logo {
@@ -57,12 +57,12 @@ body {
   color: #000; 
 }
 
-
 .bc-nav {
   display: flex;
-  justify-content: center;
   flex: 1;
-  gap: 8rem;
+  justify-content: space-evenly;
+  align-items: center;
+  gap: 3rem;
 }
 
 .bc-nav__link {
@@ -121,4 +121,15 @@ body {
 .popup-msg.error {
   background: rgba(186, 97, 97, 0.8);
   color: #111;
+}
+
+@media (max-width: 900px) {
+  html {
+    font-size: 14px;
+  }
+
+  .bc-header__inner {
+    flex-direction: column;
+		gap: 1rem;
+  }
 }

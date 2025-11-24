@@ -44,7 +44,7 @@ $user_role = $auth['role'] ?? null;
         <?php if ($user_role === 'doctor'): ?>
             <a href="/BumbleCare/pages/doctor_schedule.php" class="bc-nav__link">Розклад</a>
         <?php else: ?>
-            <a href="#" class="bc-nav__link">Лікарні</a>
+            <a href="/BumbleCare/pages/clinics.php" class="bc-nav__link">Лікарні</a>
         <?php endif; ?>
 
         <?php if ($user_role === 'doctor'): ?>

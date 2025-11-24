@@ -294,3 +294,15 @@
   border-radius: 0.5rem;
   padding: 0.7rem;
 }
+
+@media (max-width: 900px) {
+  .doctor-main {
+    flex-direction: column;
+    align-items: flex-start;
+		gap: 2rem;
+  }
+
+  .doctor-right {
+    align-items: flex-start;
+  }
+}

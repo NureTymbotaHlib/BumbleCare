@@ -59,7 +59,7 @@ $now = new DateTime('now', new DateTimeZone('Europe/Kyiv'));
       <p>У вас ще немає записів.</p>
     <?php else: ?>
       <?php foreach ($appointments as $a): 
-        $apptTime = new DateTime($a['appointment_time']);
+        $apptTime = new DateTime($a['appointment_time'], new DateTimeZone('Europe/Kyiv'));
         $endTime = (clone $apptTime)->modify('+20 minutes');
 				$isPastEnd = $endTime < $now;
         $status = $a['status'];
@@ -132,7 +132,6 @@ $now = new DateTime('now', new DateTimeZone('Europe/Kyiv'));
     <?php endif; ?>
   </div>
 
-	<!-- МОДАЛЬНЕ ВІКНО СКАСУВАННЯ ЗАПИСУ -->
 	<div id="cancelModal" class="modal hidden">
 		<div class="modal-content">
 			<span class="close-btn">&times;</span>
@@ -148,7 +147,6 @@ $now = new DateTime('now', new DateTimeZone('Europe/Kyiv'));
 		</div>
 	</div>
 
-  <!-- МОДАЛЬНЕ ВІКНО ДОДАВАННЯ ВІДГУКУ -->
   <div id="reviewModal" class="modal hidden">
     <div class="modal-content">
       <span class="close-btn">&times;</span>
@@ -182,7 +180,6 @@ $now = new DateTime('now', new DateTimeZone('Europe/Kyiv'));
     </div>
   </div>
 
-  <!-- МОДАЛЬНЕ ВІКНО ПЕРЕГЛЯДУ ВІДГУКУ -->
   <div id="viewReviewModal" class="modal hidden">
     <div class="modal-content">
       <span class="close-btn">&times;</span>
@@ -194,7 +191,6 @@ $now = new DateTime('now', new DateTimeZone('Europe/Kyiv'));
       <p id="viewReviewComment" class="review-comment"></p>
     </div>
   </div>
-
 
 </main>
 
