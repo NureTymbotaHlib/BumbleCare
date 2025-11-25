@@ -39,14 +39,16 @@
   box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
+.extra-grid,
 .patient-info {
   display: flex;
   flex-direction: column;
   justify-content: center;
 	align-items: flex-start;
-  gap: 1rem;
+   gap: 0.7rem;
 }
 
+.extra-grid p,
 .patient-info p {
   margin: 0;
 }
@@ -56,6 +58,11 @@
   color: #000;
 }
 
+.extra-grid p,
+.patient-age,
+.patient-gender,
+.patient-insurance,
+.patient-medcard,
 .appointment-date,
 .appointment-time {
 	font-size: 1.1rem;
@@ -78,6 +85,18 @@
   background: #5482C4;
 }
 
+.patient-extra-info {
+  width: 100%;
+  background: rgba(124, 98, 178, 0.39);
+  border: 1px solid #663399;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
 .appointment-form {
   width: 100%;
   background: rgba(124, 98, 178, 0.39);
@@ -96,6 +115,7 @@
   gap: 0.7rem;
 }
 
+.patient-extra-info h3,
 .form-section h3 {
   margin: 0;
   font-size: 1.3rem;
@@ -266,4 +286,12 @@
 
 .modal .btn.no:hover {
   background: rgba(166, 77, 77, 0.8);
+}
+
+@media (max-width: 900px) {
+  .appointment-header {
+    flex-direction: column;
+    align-items: flex-start;
+		gap: 2rem;
+  }
 }

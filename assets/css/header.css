@@ -123,6 +123,22 @@ body {
   color: #111;
 }
 
+/* Непередбачувані помилки що відображаються як <p> */
+.error {
+  display: block;
+  background: rgba(255, 110, 110, 0.25);
+  border: 1px solid rgba(200, 60, 60, 0.6);
+  color: #8b0000;
+  padding: 1rem 1.2rem;
+  margin: 2rem auto;
+  max-width: 1200px;
+  width: 85%;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
 @media (max-width: 900px) {
   html {
     font-size: 14px;

@@ -31,6 +31,9 @@ $stmt = $pdo->prepare("
         a.*,
         p.patient_id,
         p.date_of_birth,
+        p.gender,
+        p.insurance_number,
+        p.medical_card,
         u.full_name,
         u.profile_image
     FROM appointments a
@@ -42,9 +45,25 @@ $stmt->execute([$appointment_id, $doctor_id]);
 $appt = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$appt) {
-    echo "<p class='error'>Прийом не знайдено або у вас немає доступу.</p>";
-    include __DIR__ . '/../includes/footer.php';
-    exit;
+  echo "<p class='error'>Прийом не знайдено або у вас немає доступу.</p>";
+  include __DIR__ . '/../includes/footer.php';
+  exit;
+}
+
+if ($appt['status'] !== 'booked') {
+  echo "<p class='error'>Неможливо провести цей прийом, оскільки він не є запланованим.</p>";
+  include __DIR__ . '/../includes/footer.php';
+  exit;
+}
+
+$now = new DateTime('now', new DateTimeZone('Europe/Kyiv'));
+$start = new DateTime($appt['appointment_time'], new DateTimeZone('Europe/Kyiv'));
+$end   = (clone $start)->modify('+20 minutes');
+
+if ($end < $now) {
+  echo "<p class='error'>Неможливо розпочати прийом, оскільки час прийому вже минув.</p>";
+  include __DIR__ . '/../includes/footer.php';
+  exit;
 }
 
 $age = '—';
@@ -70,7 +89,7 @@ $endTime = (clone $startTime)->modify('+20 minutes');
         >
         <div class="patient-info">
           <p class="patient-name"><strong>Пацієнт:</strong> <?= htmlspecialchars($appt['full_name']) ?></p>
-          <p class="appointment-date"><strong>Обрана дата:</strong> <?= $startTime->format('d.m.Y') ?></p>
+          <p class="appointment-date"><strong>Дата прийому:</strong> <?= $startTime->format('d.m.Y') ?></p>
           <p class="appointment-time"><strong>Час прийому:</strong> <?= $startTime->format('H:i') ?> - <?= $endTime->format('H:i') ?></p>
         </div>
       </div>
@@ -79,6 +98,17 @@ $endTime = (clone $startTime)->modify('+20 minutes');
 				<button class="btn-back">Назад до всіх прийомів</button>
 			</div>
 
+    </div>
+
+    <div class="patient-extra-info">
+      <h3>Медична інформація пацієнта</h3>
+
+      <div class="extra-grid">
+        <p><strong>Вік:</strong> <?= htmlspecialchars($age) ?></p>
+        <p><strong>Стать:</strong> <?= htmlspecialchars($appt['gender'] ?: '—') ?></p>
+        <p><strong>Страховий номер:</strong> <?= htmlspecialchars($appt['insurance_number'] ?: '—') ?></p>
+        <p><strong>Медична карта:</strong> <?= nl2br(htmlspecialchars($appt['medical_card'] ?: '—')) ?></p>
+      </div>
     </div>
 
     <div class="appointment-form">

@@ -36,6 +36,16 @@
   background: #5482C4;
 }
 
+.no-reviews {
+  text-align: center;
+  color: #111;
+  font-size: 1.1rem;
+  margin: 0;
+  background: #C7D7FD;
+  border-radius: 0.5rem;
+  padding: 0.7rem;
+}
+
 .review-card {
   display: flex;
   justify-content: space-between;

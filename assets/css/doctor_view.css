@@ -31,8 +31,8 @@
 }
 
 .doctor-avatar {
-  width: 220px;
-  height: 220px;
+  width: 240px;
+  height: 240px;
   object-fit: cover;
   border-radius: 2rem;
   border: 1px solid #000;
@@ -44,7 +44,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-  gap: 1.5rem;
+  gap: 0.5rem;
 }
 
 .doctor-name {
@@ -154,6 +154,7 @@
   margin: 0;
   font-size: 1.1rem;
   color: #111;
+  text-align: justify;
 }
 
 .doctor-reviews-section {

@@ -45,7 +45,7 @@ $reviews = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 
     <?php if (!$reviews): ?>
-      <p>Ви ще не залишали відгуків.</p>
+      <p class="no-reviews">Ви ще не залишали відгуків.</p>
     <?php else: ?>
       <?php foreach ($reviews as $r): 
         $apptTime = $r['appointment_time'] ? new DateTime($r['appointment_time']) : null;

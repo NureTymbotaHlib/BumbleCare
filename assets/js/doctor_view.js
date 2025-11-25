@@ -5,6 +5,11 @@ document.addEventListener("DOMContentLoaded", () => {
   if (sortSelect && reviewsContainer) {
     const reviewCards = Array.from(reviewsContainer.querySelectorAll(".review-card"));
 
+    if (reviewCards.length === 0) {
+      sortSelect.addEventListener("change", () => {});
+      return;
+    }
+
     sortSelect.addEventListener("change", () => {
       const sortValue = sortSelect.value;
       const sorted = [...reviewCards];

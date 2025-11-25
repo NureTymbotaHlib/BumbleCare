@@ -2,10 +2,13 @@
 require_once __DIR__ . '/../includes/db_connect.php';
 require_once __DIR__ . '/../includes/check_auth.php';
 
+$page_css = 'doctor_view.css';
+include __DIR__ . '/../includes/header.php';
+
 $doctor_id = $_GET['doctor_id'] ?? null;
 if (!$doctor_id || !is_numeric($doctor_id)) {
-  http_response_code(400);
-  echo "<h2>Невірний запит</h2>";
+  echo "<p class='error'>Невірний запит.</p>";
+  include __DIR__ . '/../includes/footer.php';
   exit;
 }
 
@@ -13,7 +16,7 @@ $sql = "
 SELECT 
   d.doctor_id, d.license_number, d.specialty, d.phone_number AS doctor_phone,
   d.experience_years, d.certification, d.education, d.gender,
-  d.date_of_birth, d.id_code, d.about, d.work_schedule,
+  d.date_of_birth, d.id_code, d.about,
   u.full_name, u.profile_image,
   c.name AS clinic_name, c.city AS clinic_city,
   COALESCE(AVG(r.rating), 0) AS avg_rating,
@@ -31,8 +34,8 @@ $stmt->execute([$doctor_id]);
 $doctor = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$doctor) {
-  http_response_code(404);
-  echo "<h2>Лікаря не знайдено</h2>";
+  echo "<p class='error'>Лікаря не знайдено.</p>";
+  include __DIR__ . '/../includes/footer.php';
   exit;
 }
 
@@ -55,8 +58,6 @@ $review_stmt = $pdo->prepare($review_sql);
 $review_stmt->execute([$doctor_id]);
 $reviews = $review_stmt->fetchAll(PDO::FETCH_ASSOC);
 
-$page_css = 'doctor_view.css';
-include __DIR__ . '/../includes/header.php';
 ?>
 
 <main class="doctor-view-page">
@@ -73,7 +74,9 @@ include __DIR__ . '/../includes/header.php';
 						<p><strong>Місце роботи:</strong> <?= htmlspecialchars($doctor['clinic_name']) ?> (<?= htmlspecialchars($doctor['clinic_city']) ?>)</p>
 						<p><strong>Стаж:</strong> <?= htmlspecialchars($doctor['experience_years'] ?? '—') ?> років</p>
 						<p><strong>Вік:</strong> <?= htmlspecialchars($age ?? '—') ?> років</p>
-						<p><strong>Стать:</strong> <?= htmlspecialchars($doctor['gender'] ?? '—') ?></p>
+						<p><strong>Освіта:</strong> <?= htmlspecialchars($doctor['education'] ?? '—') ?></p>
+            <p><strong>Кваліфікація:</strong> <?= htmlspecialchars($doctor['certification'] ?? '—') ?></p>
+            <p><strong>Номер ліцензії:</strong> <?= htmlspecialchars($doctor['license_number'] ?? '—') ?></p>
 					</div>
       	</div>
       </div>

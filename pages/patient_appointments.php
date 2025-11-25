@@ -125,6 +125,12 @@ $now = new DateTime('now', new DateTimeZone('Europe/Kyiv'));
                 Залишити відгук
               </button>
             <?php endif; ?>
+            <button 
+              class="btn-result" 
+              onclick="window.location.href='/BumbleCare/pages/appointment_view_result.php?appointment_id=<?= $a['appointment_id'] ?>'"
+            >
+              Переглянути результати
+            </button>
           <?php endif; ?>
         </div>
       </div>

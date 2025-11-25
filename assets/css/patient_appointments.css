@@ -129,6 +129,7 @@
 	background: rgba(166, 77, 77, 0.8);
 }
 
+.btn-result,
 .btn-view-review,
 .btn-review {
 	background: #668AD2;
@@ -142,6 +143,7 @@
   transition: background 0.2s;
 }
 
+.btn-result:hover,
 .btn-view-review:hover,
 .btn-review:hover {
 	background: #5482C4;

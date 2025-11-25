@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		document.querySelectorAll(".btn-result").forEach(btn => {
 				btn.addEventListener("click", () => {
 				const id = btn.dataset.id;
-				window.location.href = `/BumbleCare/pages/appointment_result.php?appointment_id=${id}`;
+				window.location.href = `/BumbleCare/pages/appointment_view_result.php?appointment_id=${id}`;
 				});
 		});
   }
