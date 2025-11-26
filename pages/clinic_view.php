@@ -9,11 +9,6 @@ require_once __DIR__ . '/../includes/db_connect.php';
 $page_css = 'clinic_view.css';
 include __DIR__ . '/../includes/header.php';
 
-if ($isLoggedIn && $user_role === 'doctor') {
-  header("Location: /BumbleCare/pages/main.php");
-  exit;
-}
-
 $clinic_id = $_GET['clinic_id'] ?? null;
 
 if (!$clinic_id) {

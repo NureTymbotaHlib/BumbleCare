@@ -12,8 +12,6 @@
   flex-direction: column;
   align-items: center;
   gap: 2rem;
-  width: 80%;
-  max-width: 1200px;
 }
 
 .tab-content,
@@ -35,7 +33,7 @@
 }
 
 .tabs .tab {
-  padding: 10px 24px;
+  padding: 0.7rem 1.5rem;
   border-radius: 10px 10px 0 0;
   background: #C7D7FD;
   border: 1px solid #663399;
@@ -50,7 +48,6 @@
   background: #668AD2;
   border-bottom: 2px solid #668AD2;
 }
-
 
 .tabs .tab:hover{
   background: #5482C4;
@@ -80,8 +77,8 @@
 }
 
 .profile-img {
-  width: 130px;
-  height: 130px;
+  width: 180px;
+  height: 180px;
   border-radius: 50%;
   object-fit: cover;
   border: 1px solid #000;
@@ -121,7 +118,7 @@
 
 .profile-detail {
   margin: 0;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   color: #111;
   font-weight: 400;
 }
@@ -130,7 +127,6 @@
   font-weight: 600;
   color: #000;
 }
-
 
 .profile-actions {
   display: flex;
@@ -166,7 +162,6 @@
 .btn.red:hover {
   background:rgba(166, 77, 77, 0.8);
 }
-
 
 .doctor-info-form {
   width: 100%;
@@ -204,6 +199,40 @@
   transition: border-color 0.2s;
 }
 
+.form-group textarea {
+  min-height: 120px;
+	resize: none;
+	font-family: inherit;
+	text-align: justify;
+  scrollbar-gutter: stable;
+}
+
+.form-group textarea::-webkit-scrollbar,
+.form-group textarea::-webkit-scrollbar-thumb,
+.form-group textarea::-webkit-scrollbar-track {
+  cursor: default;
+}
+
+.form-group textarea::-webkit-scrollbar {
+  width: 10px;
+  border-radius: 10px;
+}
+
+.form-group textarea::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+
+.form-group textarea::-webkit-scrollbar-thumb {
+  background-color: rgba(102, 138, 210, 0.8);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.form-group textarea::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(84, 130, 196, 0.9);
+}
+
 .form-group input:disabled,
 .form-group select:disabled,
 .form-group textarea:disabled {
@@ -239,8 +268,6 @@ outline: none;
 border-color: #5482C4;
 }
 
-
-/* МОДАЛКА ЗМІНИ ПАРОЛЮ */
 .modal {
   position: fixed;
   inset: 0;
@@ -254,7 +281,6 @@ border-color: #5482C4;
 .modal.hidden {
   display: none;
 }
-
 
 .close-btn {
   position: absolute;
@@ -270,7 +296,6 @@ border-color: #5482C4;
   color: #5482C4;
 }
 
-
 #change-password-modal .modal-content {
   position: relative;
   width: 480px;
@@ -283,6 +308,8 @@ border-color: #5482C4;
     inset 0 2px 5px rgba(124, 98, 178, 0.39),
     inset 0 -2px 5px rgba(0, 0, 0, 0.08),
     0 2px 8px rgba(0, 0, 0, 0.04);
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 #change-password-modal h2 {
@@ -387,7 +414,6 @@ border-color: #5482C4;
   to { opacity: 1; transform: scale(1); }
 }
 
-
 /* Відгуки */
 .reviews-header {
   display: flex;
@@ -401,17 +427,18 @@ border-color: #5482C4;
   width: 100%;
 }
 
+.average-rating-block p {
+  margin: 5px 0 0;
+  font-size: 1.2rem;
+  color: #111;
+}
+
+.average-rating-block,
 .average-rating {
   display: flex;
   align-items: center;
   gap: 0.8rem;
   font-weight: 500;
-}
-
-.average-rating p {
-  margin: 5px 0 0;
-  font-size: 1.2rem;
-  color: #111;
 }
 
 .doctor-rating {
@@ -485,7 +512,6 @@ border-color: #5482C4;
   transition: opacity 0.3s ease;
 }
 
-
 .review-card {
   background: rgba(124, 98, 178, 0.39);
   border-radius: 16px;
@@ -556,14 +582,41 @@ border-color: #5482C4;
 .no-reviews {
   text-align: center;
   color: #111;
-  font-size: 1rem;
+  font-size: 1.1rem;
   margin: 0;
   background: #C7D7FD;
   border-radius: 0.5rem;
   padding: 0.7rem;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
+  .profile-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1.5rem;
+  }
+  
+  .tabs {
+    justify-content: center;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .reviews-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .average-rating-block{
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
   .review-header {
     flex-direction: column;
     align-items: flex-start;
@@ -571,3 +624,17 @@ border-color: #5482C4;
   }
 }
 
+@media (max-width: 480px) {
+  .profile-photo {
+    gap: 1rem;
+  }
+
+  .profile-info p,
+  .profile-info h2 {
+    text-align: start;
+  }
+  .profile-img {
+    width: 100px;
+    height: 100px;
+  }
+}

@@ -16,7 +16,7 @@ body {
 }
 
 .bc-container {
-  width: 92%;
+  width: 85%;
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -71,6 +71,7 @@ body {
   font-weight: 500;
   font-size: 1.1rem;
   transition: color 0.2s ease;
+  text-align: center;
 }
 
 .bc-nav__link:hover {
@@ -124,7 +125,7 @@ body {
 }
 
 /* Непередбачувані помилки що відображаються як <p> */
-.error {
+p.error {
   display: block;
   background: rgba(255, 110, 110, 0.25);
   border: 1px solid rgba(200, 60, 60, 0.6);
@@ -139,6 +140,37 @@ body {
   box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
 
+/* Стилізація скролбару для всіх модалок */
+.modal-content {
+  scrollbar-gutter: stable;
+}
+
+.modal-content::-webkit-scrollbar,
+.modal-content::-webkit-scrollbar-thumb,
+.modal-content::-webkit-scrollbar-track {
+  cursor: default;
+}
+
+.modal-content::-webkit-scrollbar {
+  width: 10px;
+  border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+  background-color: rgba(102, 138, 210, 0.8);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(84, 130, 196, 0.9);
+}
+
 @media (max-width: 900px) {
   html {
     font-size: 14px;
@@ -147,5 +179,17 @@ body {
   .bc-header__inner {
     flex-direction: column;
 		gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  html {
+    font-size: 12px; 
+  }
+}
+
+@media (max-width: 360px) {
+  html {
+    font-size: 11px; 
   }
 }

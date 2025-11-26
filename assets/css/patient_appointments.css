@@ -10,8 +10,6 @@
   flex-direction: column;
   align-items: center;
   gap: 2rem;
-  width: 85%;
-  max-width: 1200px;
 }
 
 .back-block {
@@ -59,7 +57,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-  gap: 1rem;
+  gap: 0.7rem;
 }
 
 .appointment-info p {
@@ -67,14 +65,14 @@
 }
 
 .doctor-name {
-    font-size: 1.3rem;
+    font-size: 1.5rem;
     color: #000;
 }
 
 .clinic,
 .appointment-date,
 .appointment-time {
-    font-size: 1rem;
+    font-size: 1.1rem;
     color: #111;
 }
 
@@ -149,7 +147,6 @@
 	background: #5482C4;
 }
 
-/* Модалка */
 .modal {
   position: fixed;
   top: 0; left: 0;
@@ -182,6 +179,8 @@
     inset 0 2px 5px rgba(124, 98, 178, 0.39),
     inset 0 -2px 5px rgba(0, 0, 0, 0.08),
     0 2px 8px rgba(0, 0, 0, 0.04);
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .modal .modal-content h2 {
@@ -382,4 +381,38 @@
   max-height: 200px;
   overflow-y: auto;
   scrollbar-gutter: stable;
+}
+
+@media (max-width: 900px) {
+  .appointment-card {
+    flex-direction: column;
+    align-items: center;
+		gap: 1.5rem;
+  }
+
+  .appointment-right {
+    align-items: center;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .doctor-avatar {
+    width: 120px;
+    height: 120px;
+  }
+
+  .appointment-left {
+    gap: 1rem;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .appointment-info {
+    align-items: center;
+  }
+  
+  .appointment-info p {
+    text-align: center;
+  }
 }

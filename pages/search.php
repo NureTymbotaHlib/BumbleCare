@@ -8,11 +8,6 @@ require_once __DIR__ . '/../includes/db_connect.php';
 $page_css = 'search.css';
 include __DIR__ . '/../includes/header.php';
 
-if ($isLoggedIn && !in_array($user_role, ['patient'])) {
-    header("Location: /BumbleCare/pages/main.php");
-    exit;
-}
-
 $clinics_stmt = $pdo->query("SELECT clinic_id, name, city FROM clinics ORDER BY name ASC");
 $clinics = $clinics_stmt->fetchAll(PDO::FETCH_ASSOC);
 

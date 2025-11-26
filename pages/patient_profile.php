@@ -7,12 +7,6 @@ require_once __DIR__ . '/../includes/db_connect.php';
 $page_css = 'patient_profile.css';
 include __DIR__ . '/../includes/header.php';
 
-
-if (empty($user_id)) {
-    header("Location: /BumbleCare/pages/login.php");
-    exit;
-}
-
 $stmt = $pdo->prepare("
     SELECT 
         u.full_name, 
@@ -35,11 +29,8 @@ $stmt = $pdo->prepare("
 $stmt->execute([$user_id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-$stmt->execute([$user_id]);
-$user = $stmt->fetch(PDO::FETCH_ASSOC);
-
 if (!$user) {
-    echo "<p>Помилка: користувач не знайдений.</p>";
+    echo "<p class='error'>Помилка: користувач не знайдений.</p>";
     include __DIR__ . '/../includes/footer.php';
     exit();
 }
@@ -141,7 +132,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image']) && 
 
   </div>
 
-  <!-- МОДАЛЬНОЕ ОКНО -->
 <div id="patient-info-modal" class="modal hidden">
   <div class="modal-content">
     <span class="close-btn">&times;</span>
@@ -229,8 +219,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image']) && 
   </div>
 </div>
 
-
-<!-- МОДАЛЬНЕ ВІКНО ЗМІНИ ПАРОЛЮ -->
 <div id="change-password-modal" class="modal hidden">
   <div class="modal-content">
     <span class="close-btn">&times;</span>

@@ -10,8 +10,6 @@
   flex-direction: column;
   align-items: center;
   gap: 2rem;
-  width: 85%;
-  max-width: 1200px;
 }
 
 .back-block {
@@ -47,7 +45,9 @@
 }
 
 .review-card {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 2rem;
   justify-content: space-between;
   align-items: center;
   border: 1px solid #663399;
@@ -62,7 +62,6 @@
   display: flex;
   align-items: center;
   gap: 2rem;
-	max-width: 45%;
 }
 
 .review-info {
@@ -70,7 +69,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-  gap: 1rem;
+  gap: 0.7rem;
 }
 
 .review-info p {
@@ -78,14 +77,14 @@
 }
 
 .doctor-name {
-    font-size: 1.3rem;
+    font-size: 1.5rem;
     color: #000;
 }
 
 .clinic,
 .review-date,
 .specialty {
-    font-size: 1rem;
+    font-size: 1.1rem;
     color: #111;
 }
 
@@ -103,7 +102,6 @@
   flex-direction: column;
   align-items: flex-end;
   gap: 1rem;
-  width: 45%;
 }
 
 .comment {
@@ -152,4 +150,39 @@
   color: #FFD700;
   -webkit-text-stroke: 0.6px #111;
   transition: width 0.4s ease;
+}
+
+@media (max-width: 900px) {
+  .review-card {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .review-left,
+  .review-right {
+    align-items: center;
+    max-width: 100%;
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .doctor-avatar {
+    width: 120px;
+    height: 120px;
+  }
+
+  .review-left {
+    gap: 1rem;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .review-info {
+    align-items: center;
+  }
+
+  .review-info p {
+    text-align: center;
+  }
 }

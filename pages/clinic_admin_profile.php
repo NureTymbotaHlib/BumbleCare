@@ -7,11 +7,6 @@ require_once __DIR__ . '/../includes/db_connect.php';
 $page_css = 'clinic_admin_profile.css';
 include __DIR__ . '/../includes/header.php';
 
-if (empty($user_id)) {
-    header("Location: /BumbleCare/pages/login.php");
-    exit;
-}
-
 $stmt = $pdo->prepare("
     SELECT 
         u.full_name,
@@ -29,7 +24,7 @@ $stmt->execute([$user_id]);
 $admin = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$admin) {
-    echo "<p>Помилка: користувач не знайдений.</p>";
+    echo "<p class='error>Помилка: користувач не знайдений.</p>";
     include __DIR__ . '/../includes/footer.php';
     exit();
 }
@@ -92,8 +87,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image']) && 
         </div>
       </div>
 
-
-
       <div class="profile-actions">
         <a href="#" class="btn blue">Змінити пароль</a>
         <a href="/BumbleCare/handlers/logout.php" class="btn red">Вийти з акаунту</a>
@@ -123,7 +116,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image']) && 
 
   </div>
 
-  <!-- Модальне вікно зміни паролю -->
   <div id="change-password-modal" class="modal hidden">
     <div class="modal-content">
       <span class="close-btn">&times;</span>

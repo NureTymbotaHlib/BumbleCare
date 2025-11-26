@@ -89,7 +89,7 @@ $now = new DateTime('now', new DateTimeZone('Europe/Kyiv'));
           <div class="appointment-info">
             <p class="doctor-name"><strong>Лікар:</strong> <?= htmlspecialchars($a['doctor_name']) ?></p>
             <p class="clinic"><strong>Клініка:</strong> <?= htmlspecialchars($a['clinic_name']) ?></p>
-            <p class="appointment-date"><strong>Обрана дата:</strong> <?= $apptTime->format('d.m.Y') ?></p>
+            <p class="appointment-date"><strong>Дата прийому:</strong> <?= $apptTime->format('d.m.Y') ?></p>
             <p class="appointment-time"><strong>Час прийому:</strong> <?= $apptTime->format('H:i') ?> - <?= $apptTime->modify('+20 minutes')->format('H:i') ?></p>
           </div>
         </div>

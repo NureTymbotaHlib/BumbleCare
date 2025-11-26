@@ -47,15 +47,13 @@ if (!$doctor) {
         >
         <div class="doctor-info">
           <p class="doctor-name"><?= htmlspecialchars($doctor['full_name']) ?></p>
-          <div class="doctor-desc">
-            <p><strong>Спеціальність:</strong> <?= htmlspecialchars($doctor['specialty'] ?? '—') ?></p>
-            <p><strong>Місце роботи:</strong> <?= htmlspecialchars($doctor['clinic_name']) ?> (<?= htmlspecialchars($doctor['clinic_city']) ?>)</p>
-          </div>
+          <p class="doctor-speciality"><strong>Спеціальність:</strong> <?= htmlspecialchars($doctor['specialty'] ?? '—') ?></p>
+          <p class="doctor-clinic"><strong>Місце роботи:</strong> <?= htmlspecialchars($doctor['clinic_name']) ?> (<?= htmlspecialchars($doctor['clinic_city']) ?>)</p>
         </div>
       </div>
 
       <div class="doctor-right">
-        <button class="btn-back" onclick="window.history.back()">Назад до вибору лікаря</button>
+        <button class="btn-back" onclick="window.location.href='/BumbleCare/pages/search.php'">Назад до вибору лікаря</button>
       </div>
     </div>
 
@@ -69,7 +67,6 @@ if (!$doctor) {
   </div>
 </main>
 
-<!-- Модалки -->
 <div id="confirmModal" class="modal hidden">
   <div class="modal-content">
     <span class="close-btn">&times;</span>

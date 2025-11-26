@@ -9,8 +9,6 @@
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  width: 85%;
-  max-width: 1200px;
 }
 
 .result-header {
@@ -31,8 +29,8 @@
 }
 
 .person-avatar {
-  width: 150px;
-  height: 150px;
+  width: 180px;
+  height: 180px;
   border-radius: 50%;
   object-fit: cover;
   border: 1px solid #000;
@@ -113,4 +111,32 @@
   line-height: 1.5;
 	text-align: justify;
   white-space: normal;
+}
+
+@media (max-width: 900px) {
+  .result-header {
+    flex-direction: column;
+		gap: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .person-avatar {
+    width: 120px;
+    height: 120px;
+  }
+
+  .person-info-block {
+    gap: 1rem;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .person-info {
+    align-items: center;
+  }
+  
+  .person-info p {
+    text-align: center;
+  }
 }

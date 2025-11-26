@@ -9,11 +9,6 @@ require_once __DIR__ . '/../includes/db_connect.php';
 $page_css = 'clinics.css';
 include __DIR__ . '/../includes/header.php';
 
-if ($isLoggedIn && $user_role === 'doctor') {
-  header("Location: /BumbleCare/pages/main.php");
-  exit;
-}
-
 $cities_stmt = $pdo->query("SELECT DISTINCT city FROM clinics WHERE city IS NOT NULL ORDER BY city ASC");
 $cities = $cities_stmt->fetchAll(PDO::FETCH_COLUMN);
 ?>

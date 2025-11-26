@@ -7,11 +7,6 @@ require_once __DIR__ . '/../includes/db_connect.php';
 $page_css = 'doctor_profile.css';
 include __DIR__ . '/../includes/header.php';
 
-if (empty($user_id)) {
-    header("Location: /BumbleCare/pages/login.php");
-    exit;
-}
-
 $stmt = $pdo->prepare("
     SELECT 
         u.full_name,
@@ -38,9 +33,8 @@ $stmt = $pdo->prepare("
 $stmt->execute([$user_id]);
 $doctor = $stmt->fetch(PDO::FETCH_ASSOC);
 
-
 if (!$doctor) {
-    echo "<p>Помилка: користувач не знайдений.</p>";
+    echo "<p class='error'>Помилка: користувач не знайдений.</p>";
     include __DIR__ . '/../includes/footer.php';
     exit();
 }
@@ -110,9 +104,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image']) && 
             </p>
 
             <p class="profile-detail">
-              <strong>Стаж:</strong>
-              <?= htmlspecialchars($doctor['experience_years'] ?? '—') ?>
-              <?= isset($doctor['experience_years']) && $doctor['experience_years'] !== '' ? ' років' : '' ?>
+              <strong>Місце роботи:</strong>
+              <?= htmlspecialchars($doctor['clinic_name'] ?? '—') ?>
             </p>
           </div>
 
@@ -124,8 +117,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image']) && 
         </div>
       </div>
 
-      
-      <!-- ФОРМА ІНФОРМАЦІЇ -->
       <?php
         $clinics = [];
         try {
@@ -222,7 +213,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image']) && 
 
     </div>
     
-
     <!-- "Мої відгуки" -->
     <div class="tab-content hidden" id="tab-reviews">
 
@@ -259,11 +249,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image']) && 
       ?>
 
       <div class="reviews-header">
-        <div class="average-rating">
+        <div class="average-rating-block">
           <p>Ваш середній рейтинг:</p>
-          <span class="rating-number"><?= htmlspecialchars($avg_rating) ?></span>
-          <div class="rating-stars" data-rating="<?= htmlspecialchars($avg_rating) ?>"></div>
-          <span class="rating-count">(<?= $total_reviews ?> відгуків)</span>
+          <div class="average-rating">      
+            <span class="rating-number"><?= htmlspecialchars($avg_rating) ?></span>
+            <div class="rating-stars" data-rating="<?= htmlspecialchars($avg_rating) ?>"></div>
+            <span class="rating-count">(<?= $total_reviews ?> відгуків)</span>
+          </div>
         </div>
 
         <form class="sort-form" onsubmit="return false;">
@@ -311,7 +303,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image']) && 
 
   </div>
 
-  <!-- МОДАЛЬНЕ ВІКНО ЗМІНИ ПАРОЛЮ -->
   <div id="change-password-modal" class="modal hidden">
     <div class="modal-content">
       <span class="close-btn">&times;</span>

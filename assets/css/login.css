@@ -91,7 +91,6 @@
   border-color: #5482C4;
 }
 
-
 .password-input-wrapper input {
   flex: 1;
   border: none;
@@ -160,7 +159,6 @@
   background: #5482C4; 
 }
 
-/* социальные кнопки */
 .social-login {
   display: flex;
   justify-content: space-between;
@@ -214,8 +212,6 @@
   border-radius: 0.8rem;
 }
 
-
-/* Красная рамка для инпутов */
 .input-error {
   border: 1px solid #ff4d4d !important;
   background: #C7D7FD !important;
@@ -235,7 +231,6 @@
   font-weight: 500;
 }
 
-/* модалка восстановления пароля */
 .modal {
   position: fixed;
   top: 0; left: 0;
@@ -269,6 +264,8 @@
     inset 0 2px 5px rgba(124, 98, 178, 0.39),
     inset 0 -2px 5px rgba(0, 0, 0, 0.08),
     0 2px 8px rgba(0, 0, 0, 0.04);
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .modal .modal-content h2 {
@@ -351,7 +348,6 @@
   border-color: #5482C4;
 }
 
-/* адаптив */
 @media (max-width: 900px) {
   .login-wrapper {
     flex-direction: column;

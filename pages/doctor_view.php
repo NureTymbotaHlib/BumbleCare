@@ -1,4 +1,7 @@
 <?php
+$requireLogin = false;  
+$allowGuest   = true;    
+$allowRoles   = ['patient']; 
 require_once __DIR__ . '/../includes/db_connect.php';
 require_once __DIR__ . '/../includes/check_auth.php';
 
@@ -69,20 +72,18 @@ $reviews = $review_stmt->fetchAll(PDO::FETCH_ASSOC);
         >
         <div class="doctor-info">
           <p class="doctor-name"><?= htmlspecialchars($doctor['full_name']) ?></p>
-					<div class="doctor-desc">
-						<p><strong>Спеціальність:</strong> <?= htmlspecialchars($doctor['specialty'] ?? '—') ?></p>
-						<p><strong>Місце роботи:</strong> <?= htmlspecialchars($doctor['clinic_name']) ?> (<?= htmlspecialchars($doctor['clinic_city']) ?>)</p>
-						<p><strong>Стаж:</strong> <?= htmlspecialchars($doctor['experience_years'] ?? '—') ?> років</p>
-						<p><strong>Вік:</strong> <?= htmlspecialchars($age ?? '—') ?> років</p>
-						<p><strong>Освіта:</strong> <?= htmlspecialchars($doctor['education'] ?? '—') ?></p>
-            <p><strong>Кваліфікація:</strong> <?= htmlspecialchars($doctor['certification'] ?? '—') ?></p>
-            <p><strong>Номер ліцензії:</strong> <?= htmlspecialchars($doctor['license_number'] ?? '—') ?></p>
-					</div>
+					<p class="doctor-desc"><strong>Спеціальність:</strong> <?= htmlspecialchars($doctor['specialty'] ?? '—') ?></p>
+					<p class="doctor-desc"><strong>Місце роботи:</strong> <?= htmlspecialchars($doctor['clinic_name']) ?> (<?= htmlspecialchars($doctor['clinic_city']) ?>)</p>
+					<p class="doctor-desc"><strong>Стаж:</strong> <?= htmlspecialchars($doctor['experience_years'] ?? '—') ?> років</p>
+					<p class="doctor-desc"><strong>Вік:</strong> <?= htmlspecialchars($age ?? '—') ?> років</p>
+					<p class="doctor-desc"><strong>Освіта:</strong> <?= htmlspecialchars($doctor['education'] ?? '—') ?></p>
+          <p class="doctor-desc"><strong>Кваліфікація:</strong> <?= htmlspecialchars($doctor['certification'] ?? '—') ?></p>
+          <p class="doctor-desc"><strong>Номер ліцензії:</strong> <?= htmlspecialchars($doctor['license_number'] ?? '—') ?></p>
       	</div>
       </div>
 
 			<div class="doctor-right">
-				<button class="btn-back" onclick="window.history.back()">Назад до вибору лікаря</button>
+				<button class="btn-back" onclick="location.href='/BumbleCare/pages/search.php'">Назад до вибору лікаря</button>
 				<div class="doctor-rating">
 					<span class="rating-number"><?= round($doctor['avg_rating'], 1) ?></span>
 					<div class="rating-stars" data-rating="<?= round($doctor['avg_rating'], 1) ?>"></div>

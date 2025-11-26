@@ -9,8 +9,6 @@
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  width: 85%;
-  max-width: 1200px;
 }
 
 .appointment-header {
@@ -31,8 +29,8 @@
 }
 
 .patient-avatar {
-  width: 150px;
-  height: 150px;
+  width: 180px;
+  height: 180px;
   border-radius: 50%;
   object-fit: cover;
   border: 1px solid #000;
@@ -225,6 +223,8 @@
     inset 0 2px 5px rgba(124, 98, 178, 0.39),
     inset 0 -2px 5px rgba(0,0,0,0.08),
     0 2px 8px rgba(0,0,0,0.04);
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .modal .modal-content h2 {
@@ -291,7 +291,27 @@
 @media (max-width: 900px) {
   .appointment-header {
     flex-direction: column;
-    align-items: flex-start;
-		gap: 2rem;
+    align-items: center;
+		gap: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .patient-avatar {
+    width: 120px;
+    height: 120px;
+  }
+
+  .patient-info-block {
+    gap: 1rem;
+    flex-direction: column;
+  }
+
+  .patient-info {
+    align-items: center;
+  }
+
+  .patient-info p {
+    text-align: center;
   }
 }

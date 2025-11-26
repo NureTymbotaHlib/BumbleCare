@@ -12,7 +12,8 @@ $stmtDoc->execute([$user_id]);
 $doctor_id = $stmtDoc->fetchColumn();
 
 if (!$doctor_id) {
-    header("Location: /BumbleCare/pages/main.php");
+    echo "<p class='error'>Помилка: профіль лікаря не знайдено.</p>";
+    include __DIR__ . '/../includes/footer.php';
     exit;
 }
 ?>
