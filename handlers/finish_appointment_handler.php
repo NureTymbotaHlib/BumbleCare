@@ -28,7 +28,9 @@ $stmt = $pdo->prepare("
   SELECT a.appointment_id
   FROM appointments a
   JOIN doctors d ON a.doctor_id = d.doctor_id
-  WHERE a.appointment_id = ? AND d.user_id = ?
+  WHERE a.appointment_id = ?
+  AND d.user_id = ?
+  AND a.status = 'booked'
 ");
 $stmt->execute([$appointment_id, $user_id]);
 

@@ -1,6 +1,6 @@
 /includes/db_connect.php
 /includes/jwt_utils.php
-handlers/send_reset_email.php
+/includes/send_mail.php
 phpinfo.php
 test_time.php
 

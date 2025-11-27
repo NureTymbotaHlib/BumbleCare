@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../includes/db_connect.php';
 require_once __DIR__ . '/../includes/check_auth.php';
+require_once __DIR__ . '/../includes/send_mail.php';
 
 header('Content-Type: application/json');
 
@@ -205,7 +206,49 @@ if ($action === "delete") {
         WHERE appointment_id = ?
       ")->execute([$apptId]);
 
-      // отправить письмо пациенту
+      $info = $pdo->prepare("
+        SELECT
+          u.email,
+          u.full_name AS patient_name,
+          doc.full_name AS doctor_name,
+          c.name AS clinic_name,
+          c.city AS clinic_city,
+          a.appointment_time
+        FROM appointments a
+        JOIN patients p ON a.patient_id = p.patient_id
+        JOIN users u ON p.user_id = u.user_id
+        JOIN doctors d ON a.doctor_id = d.doctor_id
+        JOIN users doc ON d.user_id = doc.user_id
+        JOIN clinics c ON d.clinic_id = c.clinic_id
+        WHERE a.appointment_id = ?
+      ");
+      $info->execute([$apptId]);
+      $data = $info->fetch(PDO::FETCH_ASSOC);
+
+      if ($data) {
+        $apptDate = (new DateTime($data['appointment_time'], new DateTimeZone('Europe/Kyiv')))
+          ->format('d.m.Y H:i');
+
+        $subject = "Скасування прийому | BumbleCare";
+
+        $html = "
+          <h2>Вітаємо, {$data['patient_name']}!</h2>
+
+          <p>Ваш запис було <b>скасовано лікарем</b>. Вибачаємося за незручності.</p>
+
+          <h3>Деталі прийому:</h3>
+          <p><b>Лікар:</b> {$data['doctor_name']}</p>
+          <p><b>Клініка:</b> {$data['clinic_name']} ({$data['clinic_city']})</p>
+          <p><b>Дата та час:</b> {$apptDate}</p>
+
+          <p>Будь ласка, оберіть інший зручний час або іншого лікаря у системі BumbleCare.</p>
+
+          <hr>
+          <small>© " . date('Y') . " BumbleCare</small>
+        ";
+
+        $sent = sendEmail($data['email'], $data['patient_name'], $subject, $html);
+      }
     }
   }
 
