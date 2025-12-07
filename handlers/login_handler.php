@@ -29,6 +29,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
+    if ($user['status'] !== 'active') {
+        $_SESSION['error'] = 'inactive';
+        $_SESSION['form_data'] = ['email' => $email];
+        header("Location: /BumbleCare/pages/login.php");
+        exit;
+    }
+
     $token = generate_jwt([
         'user_id' => (int)$user['user_id'],
         'role'    => $user['role']

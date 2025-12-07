@@ -88,15 +88,25 @@
         </div>
       </div>
 
-      <?php
-      unset($_SESSION['error'], $_SESSION['form_data']);
-      ?>
     </div>
 
     <div class="login-image">
       <img src="/BumbleCare/assets/images/emerald-block.png" alt="BumbleCare Bee">
     </div>
   </div>
+
+  <?php if (!empty($_SESSION['error']) && $_SESSION['error'] === 'inactive'): ?>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      showPopupMessage("Ваш акаунт неактивний", "error");
+    });
+  </script>
+  <?php endif; ?>
+  
+  <?php
+  unset($_SESSION['error'], $_SESSION['form_data']);
+  ?>
+
 </main>
 <script src="/BumbleCare/assets/js/reset_password-modal.js"></script>
 <script src="/BumbleCare/assets/js/toggle_password.js"></script>

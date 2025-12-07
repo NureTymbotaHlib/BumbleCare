@@ -50,7 +50,7 @@ $user_role = $auth['role'] ?? null;
         <?php if ($user_role === 'doctor'): ?>
             <a href="/BumbleCare/pages/doctor_appointments.php" class="bc-nav__link">Прийоми</a>
         <?php elseif ($user_role === 'clinic_admin'): ?>
-            <a href="#" class="bc-nav__link">Панель управління</a>
+            <a href="/BumbleCare/pages/clinic_admin_panel.php" class="bc-nav__link">Панель управління</a>
         <?php elseif ($user_role === 'super_admin'): ?>
             <a href="#" class="bc-nav__link">Керування системою</a>
         <?php else: ?>
