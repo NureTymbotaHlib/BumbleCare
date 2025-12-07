@@ -113,12 +113,18 @@ if ($action === 'edit') {
     exit;
   }
 
-  $full_name  = trim($_POST['full_name'] ?? '');
-  $email      = trim($_POST['email'] ?? '');
-  $phone      = trim($_POST['phone'] ?? '');
-  $specialty  = trim($_POST['specialty'] ?? '');
-  $education  = trim($_POST['education'] ?? '');
+  $full_name = trim($_POST['full_name'] ?? '');
+  $email = trim($_POST['email'] ?? '');
+  $phone = trim($_POST['phone'] ?? '');
+  $specialty = trim($_POST['specialty'] ?? '');
+  $education = trim($_POST['education'] ?? '');
   $experience = trim($_POST['experience'] ?? '');
+  $license_number = trim($_POST['license_number'] ?? '');
+  $certification = trim($_POST['certification'] ?? '');
+  $gender = trim($_POST['gender'] ?? '');
+  $date_of_birth = trim($_POST['date_of_birth'] ?? '');
+  $id_code = trim($_POST['id_code'] ?? '');
+  $about = trim($_POST['about'] ?? '');
 
   $stmt = $pdo->prepare("SELECT user_id FROM doctors WHERE doctor_id = ?");
   $stmt->execute([$doctor_id]);
@@ -138,10 +144,19 @@ if ($action === 'edit') {
 
   $stmt = $pdo->prepare("
     UPDATE doctors
-    SET specialty = ?, education = ?, experience_years = ?
+    SET specialty = ?, 
+      education = ?, 
+      experience_years = ?,
+      license_number = ?,
+      certification = ?,
+      gender = ?,
+      date_of_birth = ?,
+      id_code = ?,
+      about = ?
     WHERE doctor_id = ?
   ");
-  $stmt->execute([$specialty, $education, (int)$experience, $doctor_id]);
+
+  $stmt->execute([$specialty, $education, (int)$experience, $license_number, $certification, $gender, $date_of_birth, $id_code, $about, $doctor_id]);
 
   echo json_encode(['status' => 'success', 'message' => 'Дані лікаря оновлено']);
   exit;
@@ -199,7 +214,14 @@ if ($action === 'get_doctor') {
       u.status,
       d.specialty,
       d.education,
-      d.experience_years AS experience
+      d.experience_years AS experience,
+      d.license_number,
+      d.certification,
+      d.gender,
+      d.date_of_birth,
+      d.id_code,
+      d.about
+
     FROM doctors d
     JOIN users u ON d.user_id = u.user_id
     WHERE d.doctor_id = ?

@@ -17,7 +17,7 @@ if (!$doctor_id || !is_numeric($doctor_id)) {
 
 $sql = "
 SELECT 
-  d.doctor_id, d.license_number, d.specialty, d.phone_number AS doctor_phone,
+  d.doctor_id, d.license_number, d.specialty, u.phone_number AS doctor_phone,
   d.experience_years, d.certification, d.education, d.gender,
   d.date_of_birth, d.id_code, d.about,
   u.full_name, u.profile_image,

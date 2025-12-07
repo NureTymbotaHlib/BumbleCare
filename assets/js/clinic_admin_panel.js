@@ -3,22 +3,45 @@ document.addEventListener("DOMContentLoaded", () => {
   const editForm = document.getElementById("editDoctorForm");
   const deactivateForm = document.getElementById("deactivateDoctorForm");
 
-  const HANDLER_URL = "/BumbleCare/handlers/admin_manage_doctors.php";
-
   const editSelect = editForm.querySelector("select[name='doctor_id']");
   const deactivateSelect = deactivateForm.querySelector("select[name='doctor_id']");
 
 	const tabs = document.querySelectorAll(".tabs .tab");
 	const contents = document.querySelectorAll(".tab-content");
 
+  const clinicForm = document.getElementById("editClinicForm");
+  const btn = document.getElementById("editClinicBtn");
+  const inputs = clinicForm ? clinicForm.querySelectorAll("input, textarea") : null;
+  const dayInput     = document.getElementById("dayInput");
+
+  dayInput.addEventListener("click", () => {
+    dayInput.showPicker(); 
+  });
+
+  const savedTab = sessionStorage.getItem('activeClinicTab');
+  if (savedTab) {
+    tabs.forEach(t => t.classList.remove('active'));
+    contents.forEach(c => c.classList.add('hidden'));
+
+    if (savedTab === 'clinic') {
+      tabs[2].classList.add('active');
+      document.getElementById('tab-clinic').classList.remove('hidden');
+    }
+  }
+
 	tabs.forEach((tab, index) => {
 		tab.addEventListener("click", () => {
-
 			tabs.forEach(t => t.classList.remove("active"));
 			contents.forEach(c => c.classList.add("hidden"));
 
 			tab.classList.add("active");
 			contents[index].classList.remove("hidden");
+
+      if (index === 2) {
+        sessionStorage.setItem('activeClinicTab', 'clinic');
+      } else {
+        sessionStorage.removeItem('activeClinicTab');
+      }
 		});
 	});
 
@@ -63,7 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
     formData.append("doctor_id", doctor_id);
 
     try {
-      const res = await fetch(HANDLER_URL, { method: "POST", body: formData });
+      const res = await fetch("/BumbleCare/handlers/admin_manage_doctors.php", { method: "POST", body: formData });
       const data = await res.json();
 
       if (data.status !== "success") {
@@ -77,6 +100,12 @@ document.addEventListener("DOMContentLoaded", () => {
       editForm.querySelector("[name='specialty']").value = data.doctor.specialty ?? "";
       editForm.querySelector("[name='education']").value = data.doctor.education ?? "";
       editForm.querySelector("[name='experience']").value = data.doctor.experience ?? "";
+      editForm.querySelector("[name='license_number']").value = data.doctor.license_number ?? "";
+      editForm.querySelector("[name='certification']").value = data.doctor.certification ?? "";
+      editForm.querySelector("[name='gender']").value = data.doctor.gender ?? "";
+      editForm.querySelector("[name='date_of_birth']").value = data.doctor.date_of_birth ?? "";
+      editForm.querySelector("[name='id_code']").value = data.doctor.id_code ?? "";
+      editForm.querySelector("[name='about']").value = data.doctor.about ?? "";
 
     } catch {
       showPopupMessage("Помилка звʼязку з сервером", "error");
@@ -111,7 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
     formData.append("action", "add");
 
     try {
-      const res = await fetch(HANDLER_URL, { method: "POST", body: formData });
+      const res = await fetch("/BumbleCare/handlers/admin_manage_doctors.php", { method: "POST", body: formData });
       const data = await res.json();
 
       if (data.status === "success") {
@@ -151,7 +180,7 @@ document.addEventListener("DOMContentLoaded", () => {
     formData.append("action", "edit");
 
     try {
-      const res = await fetch(HANDLER_URL, { method: "POST", body: formData });
+      const res = await fetch("/BumbleCare/handlers/admin_manage_doctors.php", { method: "POST", body: formData });
       const data = await res.json();
 
       if (data.status === "success") {
@@ -182,7 +211,7 @@ document.addEventListener("DOMContentLoaded", () => {
     formData.append("action", "deactivate");
 
     try {
-      const res = await fetch(HANDLER_URL, { method: "POST", body: formData });
+      const res = await fetch("/BumbleCare/handlers/admin_manage_doctors.php", { method: "POST", body: formData });
       const data = await res.json();
 
       if (data.status === "success") {
@@ -200,4 +229,38 @@ document.addEventListener("DOMContentLoaded", () => {
       showPopupMessage("Помилка зʼєднання з сервером", "error");
     }
   });
+
+  if (clinicForm && btn) {
+    btn.addEventListener("click", async () => {
+      const saving = btn.textContent === "Зберегти";
+
+      if (!saving) {
+        inputs.forEach(i => i.disabled = false);
+        btn.textContent = "Зберегти";
+        return;
+      }
+
+      const formData = new FormData(clinicForm);
+      formData.append("action", "update");
+
+      try {
+        const res = await fetch("/BumbleCare/handlers/admin_manage_clinic.php", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          showPopupMessage("Дані клініки оновлено!", "success");
+          inputs.forEach(i => i.disabled = true);
+          btn.textContent = "Редагувати";
+        } else {
+          showPopupMessage(data.error || "Помилка збереження", "error");
+        }
+      } catch {
+        showPopupMessage("Помилка з'єднання з сервером", "error");
+      }
+    });
+  }
 });
