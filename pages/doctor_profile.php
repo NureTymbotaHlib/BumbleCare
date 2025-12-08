@@ -228,7 +228,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image']) && 
       $stmt_avg = $pdo->prepare("
           SELECT ROUND(AVG(r.rating), 1) AS avg_rating, COUNT(*) AS total_reviews
           FROM reviews r
-          WHERE r.doctor_id = (SELECT doctor_id FROM doctors WHERE user_id = ?)
+          WHERE r.doctor_id = (SELECT doctor_id FROM doctors WHERE user_id = ?) AND r.status = 'approved'
       ");
       $stmt_avg->execute([$user_id]);
       $avg_data = $stmt_avg->fetch(PDO::FETCH_ASSOC);
@@ -236,12 +236,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image']) && 
       $total_reviews = $avg_data['total_reviews'] ?? 0;
 
       $stmt = $pdo->prepare("
-          SELECT r.rating, r.comment, r.created_at,
-                u.full_name, u.profile_image
+          SELECT r.rating, r.comment, r.created_at, u.full_name, u.profile_image
           FROM reviews r
           LEFT JOIN patients p ON r.patient_id = p.patient_id
           LEFT JOIN users u ON p.user_id = u.user_id
-          WHERE r.doctor_id = (SELECT doctor_id FROM doctors WHERE user_id = ?)
+          WHERE r.doctor_id = (SELECT doctor_id FROM doctors WHERE user_id = ?) AND r.status = 'approved'
           ORDER BY $orderBy
       ");
       $stmt->execute([$user_id]);

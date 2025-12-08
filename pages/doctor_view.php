@@ -27,7 +27,7 @@ SELECT
 FROM doctors d
 JOIN users u ON d.user_id = u.user_id
 LEFT JOIN clinics c ON d.clinic_id = c.clinic_id
-LEFT JOIN reviews r ON d.doctor_id = r.doctor_id
+LEFT JOIN reviews r ON d.doctor_id = r.doctor_id AND r.status = 'approved'
 WHERE d.doctor_id = ?
 GROUP BY d.doctor_id
 ";
@@ -54,7 +54,7 @@ SELECT
 FROM reviews r
 JOIN patients p ON r.patient_id = p.patient_id
 JOIN users u ON p.user_id = u.user_id
-WHERE r.doctor_id = ?
+WHERE r.doctor_id = ? AND r.status = 'approved'
 ORDER BY r.created_at DESC
 ";
 $review_stmt = $pdo->prepare($review_sql);

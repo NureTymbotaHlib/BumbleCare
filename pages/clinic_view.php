@@ -31,7 +31,7 @@ $stmt = $pdo->prepare("
     COUNT(r.review_id) AS reviews_count
   FROM clinics c
   LEFT JOIN doctors d ON c.clinic_id = d.clinic_id
-  LEFT JOIN reviews r ON d.doctor_id = r.doctor_id
+  LEFT JOIN reviews r ON d.doctor_id = r.doctor_id AND r.status = 'approved'
   WHERE c.clinic_id = ?
   GROUP BY c.clinic_id
 ");

@@ -263,4 +263,113 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
+  const reviewsForm = document.getElementById("reviewsFilterForm");
+  const reviewsContainer = document.getElementById("reviewsResultsContainer");
+  const resetReviewsBtn = document.getElementById("resetReviewsFilters");
+
+  const doctorInput = reviewsForm.querySelector("input[name='doctor_query']");
+  const statusSelect = reviewsForm.querySelector("select[name='status']");
+  const sortSelect = reviewsForm.querySelector("select[name='sort']");
+  const clearDoctorBtn = document.getElementById("clearDoctorQuery");
+
+  async function loadReviews() {
+    const formData = new FormData(reviewsForm);
+    formData.append("action", "list");
+
+    try {
+      const res = await fetch("/BumbleCare/handlers/admin_manage_reviews.php", {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await res.json();
+
+      if (!data.success) {
+        reviewsContainer.innerHTML = "<p class='no-reviews'>Помилка завантаження.</p>";
+        return;
+      }
+
+      reviewsContainer.innerHTML = data.html;
+
+      if (typeof renderStars === "function") renderStars();
+      attachReviewButtons();
+
+    } catch {
+      reviewsContainer.innerHTML = "<p class='no-reviews'>Помилка з'єднання.</p>";
+    }
+  }
+
+  reviewsForm.addEventListener("submit", e => {
+    e.preventDefault();
+    loadReviews();
+  });
+
+  doctorInput.addEventListener("input", () => {
+    clearDoctorBtn.style.display = doctorInput.value.trim() ? "inline" : "none";
+  });
+
+  clearDoctorBtn.addEventListener("click", () => {
+    doctorInput.value = "";
+    clearDoctorBtn.style.display = "none";
+    loadReviews();
+  });
+
+  sortSelect.addEventListener("change", loadReviews);
+
+  resetReviewsBtn.addEventListener("click", () => {
+    statusSelect.value = "pending";
+
+    loadReviews();
+  });
+
+  function attachReviewButtons() {
+    document.querySelectorAll(".btn-approve").forEach(btn => {
+      btn.onclick = () => updateReviewStatus(btn.dataset.id, "approved");
+    });
+    document.querySelectorAll(".btn-reject").forEach(btn => {
+      btn.onclick = () => updateReviewStatus(btn.dataset.id, "rejected");
+    });
+    document.querySelectorAll(".btn-hide").forEach(btn => {
+      btn.onclick = () => updateReviewStatus(btn.dataset.id, "hidden");
+    });
+  }
+
+  async function updateReviewStatus(id, status) {
+    const formData = new FormData();
+    formData.append("action", "update");
+    formData.append("review_id", id);
+    formData.append("status", status);
+
+    const res = await fetch("/BumbleCare/handlers/admin_manage_reviews.php", {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      loadReviews();
+    } else {
+      showPopupMessage(data.error || "Помилка оновлення статусу", "error");
+    }
+  }
+
+  tabs.forEach((tab, index) => {
+    tab.addEventListener("click", () => {
+      if (contents[index].id === "tab-reviews") {
+        statusSelect.value = "pending";
+        sortSelect.value = "date_desc";
+
+        loadReviews();
+      }
+    });
+  });
+
+  const reviewsTab = document.getElementById("tab-reviews");
+  if (!reviewsTab.classList.contains("hidden")) {
+    statusSelect.value = "pending";
+    sortSelect.value = "date_desc";
+    loadReviews();
+  }
 });

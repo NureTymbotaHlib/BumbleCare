@@ -251,7 +251,54 @@ include __DIR__ . '/../includes/header.php';
 		</div>
 
 		<div class="tab-content hidden" id="tab-reviews">
-				<p>Управління відгуками</p>
+			<section class="panel-section">
+				<h2>Управління відгуками</h2>
+
+				<div class="reviews-filter-block">
+					<form id="reviewsFilterForm" class="reviews-filter-form">
+						<input type="hidden" name="clinic_id" value="<?= $clinic_id ?>">
+
+						<div class="filter-grid">
+							<div class="filter-col">
+								<label>Пошук лікаря</label>
+								<div class="doctor-input-wrapper">
+									<input type="text" name="doctor_query" placeholder="ПІБ лікаря">
+									<button type="button" id="clearDoctorQuery" class="btn-clear" style="display:none;">Скинути</button>
+								</div>
+							</div>
+
+							<div class="filter-col">
+								<label>Статус</label>
+								<select name="status">
+									<option value="pending">Очікує</option>
+									<option value="approved">Схвалені</option>
+									<option value="rejected">Відхилені</option>
+									<option value="hidden">Приховані</option>
+								</select>
+							</div>
+						</div>
+
+						<div class="controls-bar">
+							<div class="buttons-block">
+								<button type="submit" class="btn-apply">Застосувати</button>
+								<button type="button" class="btn-reset" id="resetReviewsFilters">Скинути</button>
+							</div>
+							<div class="sort-bar">
+								<label>Сортувати:</label>
+								<select name="sort" id="reviewsSortSelect">
+									<option value="date_desc">Новіші</option>
+									<option value="date_asc">Старіші</option>
+									<option value="rating_desc">Вища оцінка</option>
+									<option value="rating_asc">Нижча оцінка</option>
+								</select>
+							</div>
+						</div>
+
+					</form>
+				</div>
+
+				<div id="reviewsResultsContainer" class="reviews-results"></div>
+			</section>
 		</div>
 
 		<div class="tab-content hidden" id="tab-clinic">
@@ -305,5 +352,6 @@ include __DIR__ . '/../includes/header.php';
 
 <script src="/BumbleCare/assets/js/clinic_admin_panel.js"></script>
 <script src="/BumbleCare/assets/js/toggle_password.js"></script>
+<script src="/BumbleCare/assets/js/rating_stars.js"></script>
 
 <?php include __DIR__ . '/../includes/footer.php'; ?>

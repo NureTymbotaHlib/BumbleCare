@@ -49,8 +49,8 @@ if ($stmt->fetchColumn()) {
 }
 
 $stmt = $pdo->prepare("
-    INSERT INTO reviews (appointment_id, patient_id, doctor_id, rating, comment, created_at)
-    VALUES (?, ?, ?, ?, ?, NOW())
+		INSERT INTO reviews (appointment_id, patient_id, doctor_id, rating, comment, status, created_at)
+		VALUES (?, ?, ?, ?, ?, 'pending', NOW())
 ");
 $success = $stmt->execute([$appointment_id, $patient_id, $doctor_id, $rating, $comment]);
 

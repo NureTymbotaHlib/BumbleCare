@@ -16,7 +16,7 @@ SELECT d.doctor_id, u.full_name, d.specialty,
 FROM doctors d
 JOIN users u ON d.user_id = u.user_id
 LEFT JOIN clinics c ON d.clinic_id = c.clinic_id
-LEFT JOIN reviews r ON d.doctor_id = r.doctor_id
+LEFT JOIN reviews r ON d.doctor_id = r.doctor_id AND r.status = 'approved'
 WHERE u.status = 'active'
 ";
 $params = [];
