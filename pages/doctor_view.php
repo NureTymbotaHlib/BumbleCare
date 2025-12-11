@@ -25,7 +25,7 @@ SELECT
   COALESCE(AVG(r.rating), 0) AS avg_rating,
   COUNT(r.review_id) AS reviews_count
 FROM doctors d
-JOIN users u ON d.user_id = u.user_id
+JOIN users u ON d.user_id = u.user_id AND u.status = 'active'
 LEFT JOIN clinics c ON d.clinic_id = c.clinic_id
 LEFT JOIN reviews r ON d.doctor_id = r.doctor_id AND r.status = 'approved'
 WHERE d.doctor_id = ?
@@ -37,7 +37,7 @@ $stmt->execute([$doctor_id]);
 $doctor = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$doctor) {
-  echo "<p class='error'>Лікаря не знайдено.</p>";
+  echo "<p class='error'>Лікаря не знайдено або його профіль неактивний..</p>";
   include __DIR__ . '/../includes/footer.php';
   exit;
 }

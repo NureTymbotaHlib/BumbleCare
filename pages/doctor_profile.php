@@ -236,11 +236,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image']) && 
       $total_reviews = $avg_data['total_reviews'] ?? 0;
 
       $stmt = $pdo->prepare("
-          SELECT r.rating, r.comment, r.created_at, u.full_name, u.profile_image
+          SELECT r.rating, r.comment, r.created_at, r.status, u.full_name, u.profile_image
           FROM reviews r
           LEFT JOIN patients p ON r.patient_id = p.patient_id
           LEFT JOIN users u ON p.user_id = u.user_id
-          WHERE r.doctor_id = (SELECT doctor_id FROM doctors WHERE user_id = ?) AND r.status = 'approved'
+          WHERE r.doctor_id = (SELECT doctor_id FROM doctors WHERE user_id = ?)
           ORDER BY $orderBy
       ");
       $stmt->execute([$user_id]);
@@ -249,7 +249,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image']) && 
 
       <div class="reviews-header">
         <div class="average-rating-block">
-          <p>Ваш середній рейтинг:</p>
+          <div class="rating-label">
+            <p> Ваш середній рейтинг: </p>
+              <span class="info-wrapper" id="ratingInfo"
+                data-tooltip="У середньому рейтингу враховуються лише опубліковані (approved) відгуки.">
+              <img src="/BumbleCare/assets/icons/info.png" alt="info" class="info-icon">
+            </span>
+          </div>
           <div class="average-rating">      
             <span class="rating-number"><?= htmlspecialchars($avg_rating) ?></span>
             <div class="rating-stars" data-rating="<?= htmlspecialchars($avg_rating) ?>"></div>
@@ -257,22 +263,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image']) && 
           </div>
         </div>
 
-        <form class="sort-form" onsubmit="return false;">
-          <label for="sort">Сортувати:</label>
-          <select id="sort" name="sort">
-            <option value="date_desc" <?= $sort==='date_desc'?'selected':'' ?>>Новіші спочатку</option>
-            <option value="date_asc" <?= $sort==='date_asc'?'selected':'' ?>>Старіші спочатку</option>
-            <option value="rating_desc" <?= $sort==='rating_desc'?'selected':'' ?>>Від більшої оцінки</option>
-            <option value="rating_asc" <?= $sort==='rating_asc'?'selected':'' ?>>Від меншої оцінки</option>
-          </select>
-        </form>
+        <div class="forms-block">
+          <form class="filter-form-reviews" onsubmit="return false;">
+            <label for="reviewStatusFilter">Фільтр за статусом:</label>
+            <select id="reviewStatusFilter" name="status">
+              <option value="all">Усі</option>
+              <option value="approved">Опубліковано</option>
+              <option value="pending">Очікує</option>
+              <option value="other">Інші (відхилено/приховано)</option>
+            </select>
+          </form>
+
+          <form class="sort-form" onsubmit="return false;">
+            <label for="sort">Сортувати:</label>
+            <select id="sort" name="sort">
+              <option value="date_desc" <?= $sort==='date_desc'?'selected':'' ?>>Новіші спочатку</option>
+              <option value="date_asc" <?= $sort==='date_asc'?'selected':'' ?>>Старіші спочатку</option>
+              <option value="rating_desc" <?= $sort==='rating_desc'?'selected':'' ?>>Від більшої оцінки</option>
+              <option value="rating_asc" <?= $sort==='rating_asc'?'selected':'' ?>>Від меншої оцінки</option>
+            </select>
+          </form>
+        </div>
       </div>
+      <div id="reviews-tooltip" class="reviews-tooltip"></div>
 
       <div id="reviews-container">
         <?php
         if ($reviews):
             foreach ($reviews as $review): ?>
-              <div class="review-card">
+              <div class="review-card" data-status="<?= ($review['status'] === 'rejected' || $review['status'] === 'hidden') ? 'other' : $review['status'] ?>">
                 <div class="review-header">
                   <div class="review-user">
                     <img src="<?= htmlspecialchars($review['profile_image'] ?? '/BumbleCare/assets/images/default_avatar.png') ?>" alt="Фото" class="review-avatar">
@@ -290,6 +309,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image']) && 
                 <div class="review-body">
                   <p><?= htmlspecialchars($review['comment']) ?></p>
                 </div>
+                <div class="review-status-block">
+                  <?php
+                    $st = $review['status'];
+                      $label = match ($st) {
+                        'pending' => 'Очікує перевірки',
+                        'approved' => 'Опубліковано',
+                        'rejected' => 'Відхилено адміністрацією',
+                        'hidden' => 'Приховано адміністрацією',
+                        default => 'Невідомий статус'
+                      };
+                    ?>
+                    <span class="review-status status-<?= htmlspecialchars($st) ?>">
+                      <?= $label ?>
+                    </span>
+                  </div>
+
               </div>
         <?php
             endforeach;

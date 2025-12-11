@@ -57,8 +57,13 @@ if ($action === 'add') {
     exit;
   }
 
-  if (strlen($password) < 6) {
+  if (mb_strlen($password, 'UTF-8') < 6) {
     echo json_encode(['status' => 'error', 'message' => 'Пароль має бути не менше 6 символів']);
+    exit;
+  }
+
+  if (!preg_match('/^[0-9\-\+\s\(\)]{7,20}$/', $phone)) {
+    echo json_encode(['status' => 'error', 'message' => 'Некоректний номер телефону']);
     exit;
   }
 
@@ -129,6 +134,23 @@ if ($action === 'edit') {
   $stmt = $pdo->prepare("SELECT user_id FROM doctors WHERE doctor_id = ?");
   $stmt->execute([$doctor_id]);
   $doctor_user_id = $stmt->fetchColumn();
+
+  $check = $pdo->prepare("
+    SELECT user_id 
+    FROM users 
+    WHERE email = ? AND user_id <> ?
+  ");
+  $check->execute([$email, $doctor_user_id]);
+
+  if ($check->fetch()) {
+    echo json_encode(['status' => 'error', 'message' => 'Еmail вже використовується іншим користувачем']);
+    exit;
+  }
+
+  if (!preg_match('/^[0-9\-\+\s\(\)]{7,20}$/', $phone)) {
+    echo json_encode(['status' => 'error', 'message' => 'Некоректний номер телефону']);
+    exit;
+  }
 
   if (!$doctor_user_id) {
     echo json_encode(['status' => 'error', 'message' => 'Помилка при оновленні']);

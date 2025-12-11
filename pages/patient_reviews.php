@@ -29,7 +29,7 @@ $stmt = $pdo->prepare("
   LEFT JOIN users u ON d.user_id = u.user_id
   LEFT JOIN clinics c ON d.clinic_id = c.clinic_id
   LEFT JOIN appointments a ON r.appointment_id = a.appointment_id
-  WHERE r.patient_id = ?
+  WHERE r.patient_id = ? AND r.status = 'approved'
   ORDER BY r.created_at DESC
 ");
 $stmt->execute([$patient_id]);

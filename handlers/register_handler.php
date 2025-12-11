@@ -20,6 +20,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
+		if (mb_strlen($password, 'UTF-8') < 6) {
+				$_SESSION['error'] = 'weak_password';
+				header("Location: /BumbleCare/pages/register.php");
+				exit;
+		}
+
     $stmt = $pdo->prepare("SELECT user_id FROM users WHERE email = ?");
     $stmt->execute([$email]);
     if ($stmt->rowCount() > 0) {
@@ -35,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $pdo->beginTransaction();
 
         $stmt = $pdo->prepare("INSERT INTO users (full_name, email, password_hash, role, status)
-                               VALUES (:full_name, :email, :password_hash, 'patient', 'inactive')");
+          	VALUES (:full_name, :email, :password_hash, 'patient', 'active')");
         $stmt->execute([
             ':full_name' => $full_name,
             ':email' => $email,

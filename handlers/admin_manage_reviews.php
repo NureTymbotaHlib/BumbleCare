@@ -1,6 +1,36 @@
 <?php
 require_once __DIR__ . '/../includes/db_connect.php';
+require_once __DIR__ . '/../includes/check_auth.php';
 header('Content-Type: application/json');
+
+if ($user_role !== 'clinic_admin' && $user_role !== 'super_admin') {
+  echo json_encode(['error' => 'Access denied']);
+  exit;
+}
+
+$clinic_id = null;
+
+if ($user_role === 'clinic_admin') {
+  $stmt = $pdo->prepare("SELECT clinic_id FROM clinic_admins WHERE user_id = ?");
+  $stmt->execute([$user_id]);
+  $clinic_id = $stmt->fetchColumn();
+
+  if (!$clinic_id) {
+    echo json_encode(['error' => 'Clinic not found']);
+    exit;
+  }
+}
+
+function reviewBelongsToClinic($pdo, $review_id, $clinic_id) {
+  $stmt = $pdo->prepare("
+    SELECT COUNT(*)
+    FROM reviews r
+    JOIN doctors d ON r.doctor_id = d.doctor_id
+    WHERE r.review_id = ? AND d.clinic_id = ?
+  ");
+  $stmt->execute([$review_id, $clinic_id]);
+  return $stmt->fetchColumn() > 0;
+}
 
 $action = $_POST['action'] ?? null;
 
@@ -25,6 +55,11 @@ if ($action === "update") {
     exit;
   }
 
+    if ($user_role === 'clinic_admin' && !reviewBelongsToClinic($pdo, $review_id, $clinic_id)) {
+    echo json_encode(['error' => 'You cannot modify this review']);
+    exit;
+  }
+
   $stmt = $pdo->prepare("
     UPDATE reviews
     SET status = ?
@@ -37,14 +72,6 @@ if ($action === "update") {
 }
 
 if ($action === "list") {
-
-  $clinic_id = $_POST['clinic_id'] ?? null;
-
-  if (!$clinic_id) {
-    echo json_encode(['error' => 'Missing clinic_id']);
-    exit;
-  }
-
   $doctor_query = trim($_POST['doctor_query'] ?? '');
   $status = $_POST['status'] ?? 'pending';
   $sort = $_POST['sort'] ?? 'date_desc';
@@ -161,9 +188,21 @@ if ($action === "list") {
       </div>
 
       <div class="review-actions">
-        <button class="btn-approve" data-id="<?= $id ?>">Схвалити</button>
-        <button class="btn-reject" data-id="<?= $id ?>">Відхилити</button>
-        <button class="btn-hide" data-id="<?= $id ?>">Приховати</button>
+        <div class="review-actions">
+          <?php if ($r['review_status'] === 'pending'): ?>
+            <button class="btn-approve" data-id="<?= $id ?>">Схвалити</button>
+            <button class="btn-reject" data-id="<?= $id ?>">Відхилити</button>
+
+          <?php elseif ($r['review_status'] === 'approved'): ?>
+            <button class="btn-hide" data-id="<?= $id ?>">Приховати</button>
+
+          <?php elseif ($r['review_status'] === 'hidden'): ?>
+            <button class="btn-approve" data-id="<?= $id ?>">Показати</button>
+
+          <?php elseif ($r['review_status'] === 'rejected'): ?>
+            <button class="btn-approve" data-id="<?= $id ?>">Схвалити</button>
+          <?php endif; ?>
+        </div>
       </div>
     </div>
 

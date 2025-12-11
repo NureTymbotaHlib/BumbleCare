@@ -82,6 +82,27 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   });
 
+  // підказка інфо
+  const infoWrapper = document.getElementById("ratingInfo");
+  const reviewsTooltip = document.getElementById("reviews-tooltip");
+
+  if (infoWrapper && reviewsTooltip) {
+
+    reviewsTooltip.textContent = infoWrapper.dataset.tooltip || "";
+
+    infoWrapper.addEventListener("click", (e) => {
+      e.stopPropagation();
+      reviewsTooltip.classList.toggle("show");
+    });
+
+    reviewsTooltip.addEventListener("click", (e) => {
+      e.stopPropagation();
+    });
+
+    document.addEventListener("click", () => {
+      reviewsTooltip.classList.remove("show");
+    });
+  }
 
   // сортування відгуків
   const sortSelect = document.getElementById("sort");
@@ -124,4 +145,23 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // фільрація відгуків
+  const statusFilter = document.getElementById("reviewStatusFilter");
+
+  if (statusFilter && reviewsContainer) {
+    statusFilter.addEventListener("change", () => {
+      const selected = statusFilter.value;
+      const reviewCards = reviewsContainer.querySelectorAll(".review-card");
+
+      reviewCards.forEach(card => {
+        const status = card.dataset.status;
+
+        if (selected === "all" || selected === status) {
+          card.style.display = "flex";
+        } else {
+          card.style.display = "none";
+        }
+      });
+    });
+  }
 });

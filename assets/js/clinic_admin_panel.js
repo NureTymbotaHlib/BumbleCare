@@ -349,6 +349,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const data = await res.json();
 
     if (data.success) {
+      showPopupMessage("Статус відгуку оновлено!", "success");
       loadReviews();
     } else {
       showPopupMessage(data.error || "Помилка оновлення статусу", "error");

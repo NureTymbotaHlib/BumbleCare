@@ -20,7 +20,8 @@ $stmt = $pdo->prepare("
     c.city AS clinic_city,
     r.review_id,
     r.rating,
-    r.comment AS review_comment
+    r.comment AS review_comment,
+    r.status AS review_status
   FROM appointments a
   LEFT JOIN doctors d ON a.doctor_id = d.doctor_id
   LEFT JOIN users u ON d.user_id = u.user_id
@@ -113,6 +114,7 @@ $now = new DateTime('now', new DateTimeZone('Europe/Kyiv'));
                 class="btn-view-review"
                 data-rating="<?= htmlspecialchars($a['rating']) ?>"
                 data-comment="<?= htmlspecialchars($a['review_comment']) ?>"
+                data-status="<?= htmlspecialchars($a['review_status']) ?>"
               >
                 Переглянути відгук
               </button>
@@ -195,6 +197,7 @@ $now = new DateTime('now', new DateTimeZone('Europe/Kyiv'));
         <div class="rating-stars" id="viewRatingStars" data-rating="0"></div>
       </div>
       <p id="viewReviewComment" class="review-comment"></p>
+      <p id="viewReviewStatus" class="review-status"></p>
     </div>
   </div>
 

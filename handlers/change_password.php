@@ -16,7 +16,7 @@ if ($new !== $confirm) {
     echo json_encode(['success' => false, 'error' => 'Новий пароль і підтвердження не співпадають']);
     exit;
 }
-if (strlen($new) < 6) {
+if (mb_strlen($new, 'UTF-8') < 6) {
     echo json_encode(['success' => false, 'error' => 'Пароль має бути не менше 6 символів']);
     exit;
 }

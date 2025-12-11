@@ -149,12 +149,35 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.addEventListener("click", () => {
       const rating = parseFloat(btn.dataset.rating) || 0;
       const comment = btn.dataset.comment || "";
+      const status = btn.dataset.status || "";
 
       document.getElementById("viewRatingNumber").textContent = rating.toFixed(1);
       const starsBlock = document.getElementById("viewRatingStars");
       starsBlock.dataset.rating = rating;
 
       document.getElementById("viewReviewComment").textContent = comment;
+
+      const statusField = document.getElementById("viewReviewStatus");
+      let statusText = "";
+
+      switch (status) {
+        case "pending":
+          statusText = "Статус: очікує перевірки";
+          break;
+        case "approved":
+          statusText = "Статус: опубліковано";
+          break;
+        case "rejected":
+          statusText = "Статус: відхилено адміністрацією";
+          break;
+        case "hidden":
+          statusText = "Статус: приховано адміністрацією";
+          break;
+        default:
+          statusText = "";
+      }
+
+      statusField.textContent = statusText;
 
       if (typeof renderStars === "function") renderStars();
 

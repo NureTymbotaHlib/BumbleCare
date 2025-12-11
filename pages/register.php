@@ -33,13 +33,15 @@
 
             <div class="form-group password-group">
                 <label for="password">Пароль</label>
-                <div class="password-input-wrapper <?php echo ($error === 'password_mismatch') ? 'error' : ''; ?>">
+                <div class="password-input-wrapper <?php echo ($error === 'password_mismatch'|| $error === 'weak_password') ? 'error' : ''; ?>">
                     <input 
                     type="password" 
                     id="password" 
                     name="password" 
-                    required
-                    placeholder="<?php echo ($error === 'password_mismatch') ? 'Паролі не збігаються!' : 'secret-password'; ?>">
+                    required 
+                    placeholder="<?php 
+                      echo ($error === 'password_mismatch') ? 'Паролі не збігаються!' : (($error === 'weak_password') ? 'Мінімум 6 символів' : 'secret-password'); ?>"
+                    >
                     <button type="button" class="toggle-password" aria-label="Показати пароль">
                     <img src="/BumbleCare/assets/icons/eye-closed.svg" alt="#" class="eye-icon">
                     </button>
@@ -63,13 +65,15 @@
 
             <div class="form-group password-group">
             <label for="password-confirm">Підтвердіть пароль</label>
-            <div class="password-input-wrapper <?php echo ($error === 'password_mismatch') ? 'error' : ''; ?>">
+            <div class="password-input-wrapper <?php echo ($error === 'password_mismatch' || $error === 'weak_password') ? 'error' : ''; ?>">
                 <input 
                 type="password" 
                 id="password-confirm" 
                 name="password-confirm" 
                 required
-                placeholder="<?php echo ($error === 'password_mismatch') ? 'Паролі не збігаються!' : 'secret-password'; ?>">
+                placeholder="<?php 
+                  echo ($error === 'password_mismatch') ? 'Паролі не збігаються!' : (($error === 'weak_password') ? 'Мінімум 6 символів' : 'secret-password'); ?>"
+                >
                 <button type="button" class="toggle-password" aria-label="Показати пароль">
                 <img src="/BumbleCare/assets/icons/eye-closed.svg" alt="#" class="eye-icon">
                 </button>
