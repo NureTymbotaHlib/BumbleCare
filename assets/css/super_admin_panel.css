@@ -142,6 +142,7 @@
   color: #000;
 }
 
+.panel-form textarea,
 .panel-form input,
 .panel-form select {
   padding: 0.7rem;
@@ -154,10 +155,45 @@
   transition: border-color 0.2s;
 }
 
+.panel-form textarea:focus,
 .panel-form input:focus,
 .panel-form select:focus {
   border-color: #5482C4;
   outline: none;
+}
+
+.form-group textarea {
+  min-height: 120px;
+	resize: none;
+	font-family: inherit;
+	text-align: justify;
+  scrollbar-gutter: stable;
+}
+
+.form-group textarea::-webkit-scrollbar,
+.form-group textarea::-webkit-scrollbar-thumb,
+.form-group textarea::-webkit-scrollbar-track {
+  cursor: default;
+}
+
+.form-group textarea::-webkit-scrollbar {
+  width: 10px;
+  border-radius: 10px;
+}
+
+.form-group textarea::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+
+.form-group textarea::-webkit-scrollbar-thumb {
+  background-color: rgba(102, 138, 210, 0.8);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.form-group textarea::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(84, 130, 196, 0.9);
 }
 
 .password-input-wrapper {

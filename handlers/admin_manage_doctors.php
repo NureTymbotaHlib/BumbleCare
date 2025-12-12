@@ -4,7 +4,7 @@ require_once __DIR__ . '/../includes/check_auth.php';
 
 header('Content-Type: application/json');
 
-if ($user_role !== 'clinic_admin') {
+if (!in_array($user_role, ['clinic_admin', 'super_admin'], true)) {
   echo json_encode(['status' => 'error', 'message' => 'Access denied']);
   exit;
 }
@@ -16,20 +16,28 @@ if (!$action) {
   exit;
 }
 
-$stmt = $pdo->prepare("
-  SELECT clinic_id
-  FROM clinic_admins
-  WHERE user_id = ?
-");
-$stmt->execute([$user_id]);
-$clinic_id = $stmt->fetchColumn();
+$clinic_id = null;
 
-if (!$clinic_id) {
-  echo json_encode(['status' => 'error', 'message' => 'Clinic not found']);
-  exit;
+if ($user_role === 'clinic_admin') {
+  $stmt = $pdo->prepare("
+    SELECT clinic_id
+    FROM clinic_admins
+    WHERE user_id = ?
+  ");
+  $stmt->execute([$user_id]);
+  $clinic_id = $stmt->fetchColumn();
+
+  if (!$clinic_id) {
+    echo json_encode(['status' => 'error', 'message' => 'Clinic not found']);
+    exit;
+  }
 }
 
-function isDoctorFromClinic($pdo, $doctor_id, $clinic_id) {
+function canManageDoctor($pdo, $doctor_id, $clinic_id, $user_role) {
+  if ($user_role === 'super_admin') {
+    return true;
+  }
+
   $stmt = $pdo->prepare("
     SELECT COUNT(*)
     FROM doctors
@@ -46,6 +54,16 @@ if ($action === 'add') {
   $phone     = trim($_POST['phone'] ?? '');
   $password  = trim($_POST['password'] ?? '');
   $confirm   = trim($_POST['confirm_password'] ?? '');
+
+  $target_clinic_id = $clinic_id;
+
+  if ($user_role === 'super_admin') {
+    $target_clinic_id = (int)($_POST['clinic_id'] ?? 0);
+    if (!$target_clinic_id) {
+      echo json_encode(['status' => 'error', 'message' => 'Оберіть клініку']);
+      exit;
+    }
+  }
 
   if ($full_name === '' || $email === '' || $phone === '' || $password === '' || $confirm === '') {
     echo json_encode(['status' => 'error', 'message' => 'Усі поля обовʼязкові']);
@@ -89,11 +107,11 @@ if ($action === 'add') {
     INSERT INTO doctors (user_id, clinic_id)
     VALUES (?, ?)
   ");
-  $stmt->execute([$new_user_id, $clinic_id]);
+  $stmt->execute([$new_user_id, $target_clinic_id]);
 
   $new_doctor_id = $pdo->lastInsertId();
 
-  echo json_encode(['status' => 'success','message' => 'Лікаря успішно додано','doctor_id' => $new_doctor_id]);
+  echo json_encode(['status' => 'success','message' => 'Лікаря успішно додано','doctor_id' => $new_doctor_id, 'full_name' => $full_name, 'clinic_id' => $target_clinic_id]);
   exit;
 }
 
@@ -101,7 +119,7 @@ if ($action === 'edit') {
 
   $doctor_id = $_POST['doctor_id'] ?? null;
 
-  if (!$doctor_id || !isDoctorFromClinic($pdo, $doctor_id, $clinic_id)) {
+  if (!$doctor_id || !canManageDoctor($pdo, $doctor_id, $clinic_id, $user_role)) {
     echo json_encode(['status' => 'error', 'message' => 'Лікар не знайдений або не належить вашій клініці']);
     exit;
   }
@@ -188,7 +206,7 @@ if ($action === 'deactivate') {
 
   $doctor_id = $_POST['doctor_id'] ?? null;
 
-  if (!$doctor_id || !isDoctorFromClinic($pdo, $doctor_id, $clinic_id)) {
+  if (!$doctor_id || !canManageDoctor($pdo, $doctor_id, $clinic_id, $user_role)) {
     echo json_encode(['status' => 'error', 'message' => 'Лікар не знайдений або не належить вашій клініці']);
     exit;
   }
@@ -223,7 +241,7 @@ if ($action === 'get_doctor') {
 
   $doctor_id = $_POST['doctor_id'] ?? null;
 
-  if (!$doctor_id || !isDoctorFromClinic($pdo, $doctor_id, $clinic_id)) {
+  if (!$doctor_id || !canManageDoctor($pdo, $doctor_id, $clinic_id, $user_role)) {
     echo json_encode(['status' => 'error', 'message' => 'Лікар не знайдений']);
     exit;
   }

@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const editForm = document.getElementById("editClinicAdminForm");
   const deactivateForm = document.getElementById("deactivateClinicAdminForm");
 
-  if (!addForm || !editForm || !deactivateForm) return;
+  // if (!addForm || !editForm || !deactivateForm) return;
 
   const editSelect = editForm.querySelector("select[name='admin_id']");
   const deactSelect = deactivateForm.querySelector("select[name='admin_id']");
@@ -141,8 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const fullName = editForm.querySelector("[name='full_name']").value.trim();
-    const clinicName =
-      editForm.querySelector("select[name='clinic_id']").selectedOptions[0].textContent;
+    const clinicName = editForm.querySelector("select[name='clinic_id']").selectedOptions[0].textContent;
 
     const formData = new FormData(editForm);
     formData.append("action", "edit");
@@ -198,4 +197,265 @@ document.addEventListener("DOMContentLoaded", () => {
       showPopupMessage("Помилка з'єднання з сервером", "error");
     }
   });
+
+  // manage doctors
+  const editDoctorSelect = document.getElementById("editDoctorSelect");
+  const deactDoctorSelect = document.getElementById("deactivateDoctorSelect");
+
+  const doctorStore = new Map();
+
+  document.querySelectorAll("#editDoctorSelect option[data-clinic]").forEach(opt => {
+    doctorStore.set(opt.value, {
+      fullName: opt.textContent,
+      clinicId: opt.dataset.clinic,
+      active: true
+    });
+  });
+
+  function addDoctorToSelects(doctorId, fullName, clinicId) {
+    doctorStore.set(String(doctorId), {
+      fullName,
+      clinicId,
+      active: true
+    });
+
+    renderDoctorSelect(editDoctorSelect, editClinicSelect?.value || "", { activeOnly: true });
+    renderDoctorSelect(deactDoctorSelect, deactivateClinicSelect?.value || "", { activeOnly: true });
+  }
+
+  function updateDoctorOption(doctorId, fullName) {
+    const key = String(doctorId);
+    if (!doctorStore.has(key)) return;
+
+    doctorStore.get(key).fullName = fullName;
+
+    renderDoctorSelect(editDoctorSelect, editClinicSelect?.value || "", { activeOnly: true });
+    renderDoctorSelect(deactDoctorSelect, deactivateClinicSelect?.value || "", { activeOnly: true });
+  }
+
+  function deactivateDoctorInStore(doctorId) {
+    const key = String(doctorId);
+    if (!doctorStore.has(key)) return;
+
+    doctorStore.get(key).active = false;
+
+    renderDoctorSelect(editDoctorSelect, editClinicSelect?.value || "", { activeOnly: true });
+    renderDoctorSelect(deactDoctorSelect, deactivateClinicSelect?.value || "", { activeOnly: true });
+  }
+
+
+  function renderDoctorSelect(selectEl, clinicId, { activeOnly = false } = {}) {
+    if (!selectEl) return;
+
+    selectEl.innerHTML = '<option value="">Оберіть лікаря...</option>';
+
+    for (const [doctorId, doc] of doctorStore.entries()) {
+      if (activeOnly && !doc.active) continue;
+      if (clinicId && String(doc.clinicId) !== String(clinicId)) continue;
+
+      const opt = document.createElement("option");
+      opt.value = doctorId;
+      opt.textContent = doc.fullName;
+      opt.dataset.clinic = doc.clinicId;
+
+      selectEl.appendChild(opt);
+    }
+  }
+
+  const editClinicSelect = document.getElementById("editClinicSelect");
+  const deactivateClinicSelect = document.getElementById("deactivateClinicSelect");
+
+  if (editClinicSelect) {
+    editClinicSelect.addEventListener("change", () => {
+      renderDoctorSelect(
+        editDoctorSelect,
+        editClinicSelect.value,
+        { activeOnly: true }
+      );
+    });
+  }
+
+  if (deactivateClinicSelect) {
+    deactivateClinicSelect.addEventListener("change", () => {
+      renderDoctorSelect(
+        deactDoctorSelect,
+        deactivateClinicSelect.value,
+        { activeOnly: true }
+      );
+    });
+  }
+
+  const addDoctorForm = document.getElementById("addDoctorForm");
+  const editDoctorForm = document.getElementById("editDoctorForm");
+  const deactivateDoctorForm = document.getElementById("deactivateDoctorForm");
+
+  if (editDoctorSelect) {
+    editDoctorSelect.addEventListener("change", async () => {
+      const doctorId = editDoctorSelect.value;
+      if (!doctorId) return;
+
+      const formData = new FormData();
+      formData.append("action", "get_doctor");
+      formData.append("doctor_id", doctorId);
+
+      try {
+        const res = await fetch("/BumbleCare/handlers/admin_manage_doctors.php", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await res.json();
+
+        if (data.status !== "success") {
+          showPopupMessage(data.message || "Не вдалося отримати дані лікаря", "error");
+          return;
+        }
+
+        editDoctorForm.querySelector("[name='full_name']").value = data.doctor.full_name ?? "";
+        editDoctorForm.querySelector("[name='email']").value = data.doctor.email ?? "";
+        editDoctorForm.querySelector("[name='phone']").value = data.doctor.phone ?? "";
+        editDoctorForm.querySelector("[name='specialty']").value = data.doctor.specialty ?? "";
+        editDoctorForm.querySelector("[name='education']").value = data.doctor.education ?? "";
+        editDoctorForm.querySelector("[name='experience']").value = data.doctor.experience ?? "";
+        editDoctorForm.querySelector("[name='license_number']").value = data.doctor.license_number ?? "";
+        editDoctorForm.querySelector("[name='certification']").value = data.doctor.certification ?? "";
+        editDoctorForm.querySelector("[name='gender']").value = data.doctor.gender ?? "";
+        editDoctorForm.querySelector("[name='date_of_birth']").value = data.doctor.date_of_birth ?? "";
+        editDoctorForm.querySelector("[name='id_code']").value = data.doctor.id_code ?? "";
+        editDoctorForm.querySelector("[name='about']").value = data.doctor.about ?? "";
+      } catch {
+        showPopupMessage("Помилка звʼязку з сервером", "error");
+      }
+    });
+  }
+
+  if (addDoctorForm) {
+    addDoctorForm.addEventListener("submit", async e => {
+      e.preventDefault();
+
+      const fullName = addDoctorForm.querySelector("[name='full_name']").value.trim();
+      const email = addDoctorForm.querySelector("[name='email']").value.trim();
+      const phone = addDoctorForm.querySelector("[name='phone']").value.trim();
+      const pw = addDoctorForm.querySelector("[name='password']").value.trim();
+      const conf = addDoctorForm.querySelector("[name='confirm_password']").value.trim();
+      const clinicId = addDoctorForm.querySelector("[name='clinic_id']").value.trim();
+
+      if (!fullName || !email || !phone || !pw || !conf || !clinicId) {
+        showPopupMessage("Усі поля обовʼязкові", "error");
+        return;
+      }
+
+      if (pw !== conf) {
+        showPopupMessage("Паролі не співпадають", "error");
+        return;
+      }
+
+      if (pw.length < 6) {
+        showPopupMessage("Пароль має бути не менше 6 символів", "error");
+        return;
+      }
+
+      const formData = new FormData(addDoctorForm);
+      formData.append("action", "add");
+
+      try {
+        const res = await fetch("/BumbleCare/handlers/admin_manage_doctors.php", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await res.json();
+
+        if (data.status === "success") {
+          addDoctorToSelects(data.doctor_id, data.full_name, data.clinic_id);
+          showPopupMessage("Лікаря додано успішно", "success");
+          addDoctorForm.reset();
+        } else {
+          showPopupMessage(data.message || "Помилка додавання лікаря", "error");
+        }
+      } catch {
+        showPopupMessage("Помилка зʼєднання з сервером", "error");
+      }
+    });
+  }
+
+
+  if (editDoctorForm) {
+    editDoctorForm.addEventListener("submit", async e => {
+      e.preventDefault();
+
+      const doctorId = editDoctorForm.querySelector("[name='doctor_id']").value;
+
+      if (!doctorId) {
+        showPopupMessage("Оберіть лікаря", "error");
+        return;
+      }
+
+      const fullName = editDoctorForm.querySelector("[name='full_name']").value.trim();
+
+      const formData = new FormData(editDoctorForm);
+      formData.append("action", "edit");
+
+      try {
+        const res = await fetch("/BumbleCare/handlers/admin_manage_doctors.php", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await res.json();
+
+        if (data.status === "success") {
+          updateDoctorOption(doctorId, fullName);
+          showPopupMessage("Дані лікаря оновлено", "success");
+          editDoctorForm.reset();
+        } else {
+          showPopupMessage(data.message || "Помилка редагування", "error");
+        }
+      } catch {
+        showPopupMessage("Помилка зʼєднання з сервером", "error");
+      }
+    });
+  }
+
+  if (deactivateDoctorForm) {
+    deactivateDoctorForm.addEventListener("submit", async e => {
+      e.preventDefault();
+
+      const doctorId = deactivateDoctorForm.querySelector("[name='doctor_id']").value;
+      if (!doctorId) {
+        showPopupMessage("Оберіть лікаря", "error");
+        return;
+      }
+
+      const formData = new FormData(deactivateDoctorForm);
+      formData.append("action", "deactivate");
+
+      try {
+        const res = await fetch("/BumbleCare/handlers/admin_manage_doctors.php", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await res.json();
+
+        if (data.status === "success") {
+          deactivateDoctorInStore(doctorId);
+
+          renderDoctorSelect(
+            editDoctorSelect,
+            editClinicSelect?.value || "",
+            { activeOnly: true }
+          );
+
+          deactivateClinicSelect.value = "";
+          renderDoctorSelect(deactDoctorSelect, "", { activeOnly: true });
+
+          showPopupMessage("Лікаря деактивовано", "success");
+        }
+
+      } catch {
+        showPopupMessage("Помилка зʼєднання з сервером", "error");
+      }
+    });
+  }
 });

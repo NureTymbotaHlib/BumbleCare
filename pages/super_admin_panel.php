@@ -27,6 +27,18 @@ $admins = $pdo->query("
     WHERE u.status = 'active'
 ")->fetchAll(PDO::FETCH_ASSOC);
 
+$doctors = $pdo->query("
+  SELECT 
+    d.doctor_id,
+    u.full_name,
+    u.status,
+    d.specialty,
+    d.clinic_id
+  FROM doctors d
+  JOIN users u ON d.user_id = u.user_id
+  ORDER BY u.full_name ASC
+")->fetchAll(PDO::FETCH_ASSOC);
+
 include __DIR__ . '/../includes/header.php';
 ?>
 
@@ -65,9 +77,201 @@ include __DIR__ . '/../includes/header.php';
 
     <div class="tab-content active" id="tab-doctors">
       <section class="panel-section">
-        <h2>Управління лікарями</h2>
-        <p>Тут буде можливість додавати, редагувати та деактивувати лікарів.</p>
+        <h2>Додати лікаря</h2>
+
+        <form id="addDoctorForm" class="panel-form">
+
+          <div class="form-group">
+            <label>Повне ім’я лікаря</label>
+            <input type="text" name="full_name" placeholder="Введіть ПІБ лікаря">
+          </div>
+
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" placeholder="Введіть пошту лікаря">
+          </div>
+
+          <div class="form-group">
+            <label>Початковий пароль</label>
+            <div class="password-input-wrapper">
+              <input type="password" name="password" placeholder="Введіть пароль">
+              <button type="button" class="toggle-password">
+                <img src="/BumbleCare/assets/icons/eye-closed.svg" class="eye-icon">
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Підтвердження пароля</label>
+            <div class="password-input-wrapper">
+              <input type="password" name="confirm_password" placeholder="Повторіть пароль">
+              <button type="button" class="toggle-password">
+                <img src="/BumbleCare/assets/icons/eye-closed.svg" class="eye-icon">
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Номер телефону</label>
+            <input type="text" name="phone" placeholder="Введіть номер телефону лікаря">
+          </div>
+
+          <div class="form-group">
+            <label>Клініка</label>
+            <select name="clinic_id">
+              <option value="">Оберіть клініку...</option>
+              <?php foreach ($allClinics as $cl): ?>
+                <option value="<?= $cl['clinic_id'] ?>">
+                  <?= htmlspecialchars($cl['name']) ?>
+                </option>
+              <?php endforeach; ?>
+            </select>
+          </div>
+
+          <button type="submit" class="btn-submit">Додати лікаря</button>
+        </form>
       </section>
+
+      <section class="panel-section">
+        <h2>Редагувати лікаря</h2>
+
+        <form id="editDoctorForm" class="panel-form">
+
+          <div class="form-group">
+            <label>Клініка</label>
+            <select id="editClinicSelect">
+              <option value="">Оберіть клініку...</option>
+              <?php foreach ($allClinics as $cl): ?>
+                <option value="<?= $cl['clinic_id'] ?>">
+                  <?= htmlspecialchars($cl['name']) ?>
+                </option>
+              <?php endforeach; ?>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Лікар</label>
+            <select name="doctor_id" id="editDoctorSelect">
+              <option value="">Оберіть лікаря...</option>
+
+              <?php foreach ($doctors as $doc): ?>
+                <?php if ($doc['status'] === 'active'): ?>
+                  <option
+                    value="<?= $doc['doctor_id'] ?>"
+                    data-clinic="<?= $doc['clinic_id'] ?>"
+                  >
+                  <?= htmlspecialchars($doc['full_name']) ?>
+                  </option>
+                <?php endif; ?>
+              <?php endforeach; ?>
+
+            </select>
+          </div>
+
+					<div class="form-group">
+						<label>Повне ім’я лікаря</label>
+						<input type="text" name="full_name" placeholder="ПІБ лікаря">
+					</div>
+					<div class="form-group">
+						<label>Email</label>
+						<input type="email" name="email" placeholder="Email лікаря">
+					</div>
+					<div class="form-group">
+						<label>Номер телефону</label>
+						<input type="text" name="phone" placeholder="Номер телефону">
+					</div>
+					<div class="form-group">
+						<label>Спеціальність</label>
+						<input type="text" name="specialty" placeholder="Спеціальність">
+					</div>
+					<div class="form-group">
+						<label>Освіта</label>
+						<input type="text" name="education" placeholder="Освіта">
+					</div>
+					<div class="form-group">
+						<label>Стаж (років)</label>
+						<input type="number" name="experience" placeholder="Кількість років">
+					</div>
+					<div class="form-group">
+						<label>Номер ліцензії</label>
+						<input type="text" name="license_number" placeholder="Номер ліцензії">
+					</div>
+
+					<div class="form-group">
+						<label>Атестація</label>
+						<input type="text" name="certification" placeholder="Кваліфікація / атестація">
+					</div>
+
+					<div class="form-group">
+						<label>Стать</label>
+						<select name="gender">
+							<option value="">Стать</option>
+							<option value="Чоловіча">Чоловіча</option>
+							<option value="Жіноча">Жіноча</option>
+						</select>
+					</div>
+
+					<div class="form-group">
+						<label>Дата народження</label>
+						<input type="date" name="date_of_birth" id="dayInput">
+					</div>
+
+					<div class="form-group">
+						<label>Ідентифікаційний код</label>
+						<input type="text" name="id_code" placeholder="Ідентифікаційний код">
+					</div>
+
+					<div class="form-group">
+						<label>Про лікаря</label>
+						<textarea name="about" placeholder="Коротка інформація про лікаря"></textarea>
+					</div>
+
+          <button type="submit" class="btn-submit">Оновити лікаря</button>
+        </form>
+      </section>
+
+      <section class="panel-section">
+        <h2>Деактивувати лікаря</h2>
+
+        <form id="deactivateDoctorForm" class="panel-form">
+
+          <div class="form-group">
+            <label>Клініка</label>
+            <select id="deactivateClinicSelect">
+              <option value="">Оберіть клініку...</option>
+              <?php foreach ($allClinics as $cl): ?>
+                <option value="<?= $cl['clinic_id'] ?>">
+                  <?= htmlspecialchars($cl['name']) ?>
+                </option>
+              <?php endforeach; ?>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Лікар</label>
+            <select name="doctor_id" id="deactivateDoctorSelect">
+              <option value="">Оберіть лікаря...</option>
+
+              <?php foreach ($doctors as $doc): ?>
+                <?php if ($doc['status'] === 'active'): ?>
+                  <option
+                    value="<?= $doc['doctor_id'] ?>"
+                    data-clinic="<?= $doc['clinic_id'] ?>"
+                  >
+                    <?= htmlspecialchars($doc['full_name']) ?>
+                  </option>
+                <?php endif; ?>
+              <?php endforeach; ?>
+
+            </select>
+          </div>
+
+          <button type="submit" class="btn-submit btn-red">
+            Деактивувати
+          </button>
+        </form>
+      </section>
+
     </div>
 
     <div class="tab-content hidden" id="tab-admins">
