@@ -149,6 +149,18 @@ if ($action === 'edit') {
   $id_code = trim($_POST['id_code'] ?? '');
   $about = trim($_POST['about'] ?? '');
 
+  $target_clinic_id = null;
+
+  if ($user_role === 'super_admin') {
+    $target_clinic_id = (int)($_POST['clinic_id'] ?? 0);
+
+    if (!$target_clinic_id) {
+      echo json_encode([
+        'status' => 'error', 'message' => 'Оберіть клініку']);
+      exit;
+    }
+  }
+
   $stmt = $pdo->prepare("SELECT user_id FROM doctors WHERE doctor_id = ?");
   $stmt->execute([$doctor_id]);
   $doctor_user_id = $stmt->fetchColumn();
@@ -182,10 +194,11 @@ if ($action === 'edit') {
   ");
   $stmt->execute([$full_name, $email, $phone, $doctor_user_id]);
 
-  $stmt = $pdo->prepare("
+  $sql = "
     UPDATE doctors
-    SET specialty = ?, 
-      education = ?, 
+    SET
+      specialty = ?,
+      education = ?,
       experience_years = ?,
       license_number = ?,
       certification = ?,
@@ -193,10 +206,30 @@ if ($action === 'edit') {
       date_of_birth = ?,
       id_code = ?,
       about = ?
-    WHERE doctor_id = ?
-  ");
+  ";
 
-  $stmt->execute([$specialty, $education, (int)$experience, $license_number, $certification, $gender, $date_of_birth, $id_code, $about, $doctor_id]);
+  $params = [
+    $specialty,
+    $education,
+    (int)$experience,
+    $license_number,
+    $certification,
+    $gender,
+    $date_of_birth,
+    $id_code,
+    $about
+  ];
+
+  if ($user_role === 'super_admin') {
+    $sql .= ", clinic_id = ?";
+    $params[] = $target_clinic_id;
+  }
+
+  $sql .= " WHERE doctor_id = ?";
+    $params[] = $doctor_id;
+  
+  $stmt = $pdo->prepare($sql);
+  $stmt->execute($params);
 
   echo json_encode(['status' => 'success', 'message' => 'Дані лікаря оновлено']);
   exit;
@@ -252,6 +285,7 @@ if ($action === 'get_doctor') {
       u.email,
       u.phone_number AS phone,
       u.status,
+      d.clinic_id,
       d.specialty,
       d.education,
       d.experience_years AS experience,

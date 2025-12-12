@@ -187,6 +187,24 @@ if ($action === "delete") {
   $time = $_POST['time'];
   $busy = isset($_POST['busy']) ? (int)$_POST['busy'] : 0;
 
+  $checkCompleted = $pdo->prepare("
+    SELECT COUNT(*)
+    FROM appointments
+    WHERE doctor_id = ?
+      AND DATE(appointment_time) = ?
+      AND DATE_FORMAT(appointment_time, '%H:%i') = ?
+      AND status = 'completed'
+  ");
+  $checkCompleted->execute([$doctor_id, $date, $time]);
+
+  if ($checkCompleted->fetchColumn() > 0) {
+    echo json_encode([
+      'success' => false,
+      'error' => 'Неможливо змінювати слот з уже завершеним прийомом'
+    ]);
+    exit;
+  }
+
   if ($busy === 1) {
     $stmt = $pdo->prepare("
       SELECT appointment_id

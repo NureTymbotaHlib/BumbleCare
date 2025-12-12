@@ -4,7 +4,10 @@ $requireRole = 'super_admin';
 require_once __DIR__ . '/../includes/check_auth.php';
 require_once __DIR__ . '/../includes/db_connect.php';
 
-$page_css = 'super_admin_panel.css';
+$page_css = [
+  'super_admin_panel.css',
+  'manage_reviews_tab.css'
+];
 
 $stmt = $pdo->prepare("
     SELECT u.full_name, u.profile_image
@@ -119,7 +122,7 @@ include __DIR__ . '/../includes/header.php';
           <div class="form-group">
             <label>Клініка</label>
             <select name="clinic_id">
-              <option value="">Оберіть клініку...</option>
+              <option value="" disabled selected hidden>Оберіть клініку...</option>
               <?php foreach ($allClinics as $cl): ?>
                 <option value="<?= $cl['clinic_id'] ?>">
                   <?= htmlspecialchars($cl['name']) ?>
@@ -138,9 +141,8 @@ include __DIR__ . '/../includes/header.php';
         <form id="editDoctorForm" class="panel-form">
 
           <div class="form-group">
-            <label>Клініка</label>
             <select id="editClinicSelect">
-              <option value="">Оберіть клініку...</option>
+              <option value="" disabled selected hidden>Оберіть клініку...</option>
               <?php foreach ($allClinics as $cl): ?>
                 <option value="<?= $cl['clinic_id'] ?>">
                   <?= htmlspecialchars($cl['name']) ?>
@@ -150,9 +152,8 @@ include __DIR__ . '/../includes/header.php';
           </div>
 
           <div class="form-group">
-            <label>Лікар</label>
             <select name="doctor_id" id="editDoctorSelect">
-              <option value="">Оберіть лікаря...</option>
+              <option value="" disabled selected hidden>Оберіть лікаря...</option>
 
               <?php foreach ($doctors as $doc): ?>
                 <?php if ($doc['status'] === 'active'): ?>
@@ -226,6 +227,18 @@ include __DIR__ . '/../includes/header.php';
 						<textarea name="about" placeholder="Коротка інформація про лікаря"></textarea>
 					</div>
 
+          <div class="form-group">
+            <label>Клініка де працює</label>
+            <select name="clinic_id">
+              <option value="" disabled selected hidden>Клініка лікаря...</option>
+              <?php foreach ($allClinics as $cl): ?>
+                <option value="<?= $cl['clinic_id'] ?>">
+                  <?= htmlspecialchars($cl['name']) ?>
+                </option>
+              <?php endforeach; ?>
+            </select>
+          </div>
+
           <button type="submit" class="btn-submit">Оновити лікаря</button>
         </form>
       </section>
@@ -236,9 +249,8 @@ include __DIR__ . '/../includes/header.php';
         <form id="deactivateDoctorForm" class="panel-form">
 
           <div class="form-group">
-            <label>Клініка</label>
             <select id="deactivateClinicSelect">
-              <option value="">Оберіть клініку...</option>
+              <option value="" disabled selected hidden>Оберіть клініку...</option>
               <?php foreach ($allClinics as $cl): ?>
                 <option value="<?= $cl['clinic_id'] ?>">
                   <?= htmlspecialchars($cl['name']) ?>
@@ -248,9 +260,8 @@ include __DIR__ . '/../includes/header.php';
           </div>
 
           <div class="form-group">
-            <label>Лікар</label>
             <select name="doctor_id" id="deactivateDoctorSelect">
-              <option value="">Оберіть лікаря...</option>
+              <option value="" disabled selected hidden>Оберіть лікаря...</option>
 
               <?php foreach ($doctors as $doc): ?>
                 <?php if ($doc['status'] === 'active'): ?>
@@ -318,7 +329,7 @@ include __DIR__ . '/../includes/header.php';
           <div class="form-group">
             <label>Прив’язати до клініки</label>
             <select name="clinic_id">
-              <option value="">Оберіть клініку...</option>
+              <option value="" disabled selected hidden>Оберіть клініку...</option>
 
               <?php foreach ($allClinics as $cl): ?>
                 <option value="<?= $cl['clinic_id'] ?>">
@@ -338,11 +349,11 @@ include __DIR__ . '/../includes/header.php';
         <form id="editClinicAdminForm" class="panel-form">
 
           <select name="admin_id">
-            <option value="">Оберіть адміністратора...</option>
+            <option value="" disabled selected hidden>Оберіть адміністратора...</option>
 
             <?php foreach ($admins as $a): ?>
               <option value="<?= $a['admin_id'] ?>">
-                <?= htmlspecialchars($a['full_name']) ?> — <?= htmlspecialchars($a['clinic_name']) ?>
+                <?= htmlspecialchars($a['full_name']) ?>
               </option>
             <?php endforeach; ?>
 
@@ -366,7 +377,7 @@ include __DIR__ . '/../includes/header.php';
           <div class="form-group">
             <label>Клініка</label>
             <select name="clinic_id">
-              <option value="">Оберіть клініку...</option>
+              <option value="" disabled selected hidden>Оберіть клініку...</option>
               <?php foreach ($allClinics as $cl): ?>
                 <option value="<?= $cl['clinic_id'] ?>"><?= htmlspecialchars($cl['name']) ?></option>
               <?php endforeach; ?>
@@ -382,7 +393,7 @@ include __DIR__ . '/../includes/header.php';
 
         <form id="deactivateClinicAdminForm" class="panel-form">
           <select name="admin_id">
-            <option value="">Оберіть адміністратора...</option>
+            <option value="" disabled selected hidden>Оберіть адміністратора...</option>
 
             <?php foreach ($admins as $a): ?>
               <option value="<?= $a['admin_id'] ?>">
@@ -401,12 +412,55 @@ include __DIR__ . '/../includes/header.php';
     </div>
 
 
-    <div class="tab-content hidden" id="tab-reviews">
-      <section class="panel-section">
-        <h2>Управління відгуками</h2>
-        <p>Тут супер-адмін бачитиме всі відгуки.</p>
-      </section>
-    </div>
+		<div class="tab-content hidden" id="tab-reviews">
+			<section class="panel-section">
+				<h2>Управління відгуками</h2>
+
+				<div class="reviews-filter-block">
+					<form id="reviewsFilterForm" class="reviews-filter-form">
+
+						<div class="filter-grid">
+							<div class="filter-col">
+								<label>Пошук лікаря</label>
+								<div class="doctor-input-wrapper">
+									<input type="text" name="doctor_query" placeholder="ПІБ лікаря">
+									<button type="button" id="clearDoctorQuery" class="btn-clear" style="display:none;">Скинути</button>
+								</div>
+							</div>
+
+							<div class="filter-col">
+								<label>Статус</label>
+								<select name="status">
+									<option value="pending">Очікує</option>
+									<option value="approved">Схвалені</option>
+									<option value="rejected">Відхилені</option>
+									<option value="hidden">Приховані</option>
+								</select>
+							</div>
+						</div>
+
+						<div class="controls-bar">
+							<div class="buttons-block">
+								<button type="submit" class="btn-apply">Застосувати</button>
+								<button type="button" class="btn-reset" id="resetReviewsFilters">Скинути</button>
+							</div>
+							<div class="sort-bar">
+								<label>Сортувати:</label>
+								<select name="sort" id="reviewsSortSelect">
+									<option value="date_desc">Новіші</option>
+									<option value="date_asc">Старіші</option>
+									<option value="rating_desc">Вища оцінка</option>
+									<option value="rating_asc">Нижча оцінка</option>
+								</select>
+							</div>
+						</div>
+
+					</form>
+				</div>
+
+				<div id="reviewsResultsContainer" class="reviews-results"></div>
+			</section>
+		</div>
 
     <div class="tab-content hidden" id="tab-users">
       <section class="panel-section">
@@ -426,6 +480,7 @@ include __DIR__ . '/../includes/header.php';
 </main>
 
 <script src="/BumbleCare/assets/js/super_admin_panel.js"></script>
+<script src="/BumbleCare/assets/js/rating_stars.js"></script>
 <script src="/BumbleCare/assets/js/toggle_password.js"></script>
 
 <?php include __DIR__ . '/../includes/footer.php'; ?>

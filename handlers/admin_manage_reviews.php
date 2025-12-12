@@ -106,10 +106,15 @@ if ($action === "list") {
     JOIN appointments a ON r.appointment_id = a.appointment_id
     JOIN clinics c ON d.clinic_id = c.clinic_id
 
-    WHERE d.clinic_id = ?
+    WHERE 1
   ";
 
-  $params = [$clinic_id];
+  $params = [];
+
+  if ($user_role === 'clinic_admin') {
+    $sql .= " AND d.clinic_id = ? ";
+    $params[] = $clinic_id;
+  }
 
   if ($doctor_query !== '') {
     $sql .= " AND du.full_name LIKE ? ";

@@ -81,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image']) && 
         <div class="profile-info">
           <h2><?= htmlspecialchars($admin['full_name']) ?></h2>
           <p class="profile-detail">
-            <strong>Адміністратор клініки:</strong>
+            <strong>Адміністратор клініки:</strong><br>
             <?= htmlspecialchars($admin['clinic_name'] ?? 'Без клініки') ?>
           </p>
         </div>

@@ -151,7 +151,7 @@ document.addEventListener("DOMContentLoaded", () => {
           showPopupMessage("Слот видалено", "success");
           loadSchedule();
         } else {
-          showPopupMessage("Помилка видалення слоту", "error");
+          showPopupMessage(data.error || "Помилка видалення слоту", "error");
         }
       });
   }

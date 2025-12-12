@@ -20,8 +20,14 @@ $user_role = $auth['role'] ?? null;
 
     <link rel="stylesheet" href="/BumbleCare/assets/css/header.css">
 
-    <?php if (!empty($page_css)) : ?>
-        <link rel="stylesheet" href="/BumbleCare/assets/css/<?= htmlspecialchars($page_css) ?>">
+    <?php if (!empty($page_css)): ?>
+        <?php if (is_array($page_css)): ?>
+            <?php foreach ($page_css as $css): ?>
+                <link rel="stylesheet" href="/BumbleCare/assets/css/<?= htmlspecialchars($css) ?>">
+            <?php endforeach; ?>
+        <?php else: ?>
+            <link rel="stylesheet" href="/BumbleCare/assets/css/<?= htmlspecialchars($page_css) ?>">
+        <?php endif; ?>
     <?php endif; ?>
 
     <link rel="stylesheet" href="/BumbleCare/assets/css/footer.css">

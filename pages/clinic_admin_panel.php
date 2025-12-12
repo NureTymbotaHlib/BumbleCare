@@ -4,7 +4,10 @@ $requireRole = 'clinic_admin';
 require_once __DIR__ . '/../includes/check_auth.php';
 require_once __DIR__ . '/../includes/db_connect.php';
 
-$page_css = 'clinic_admin_panel.css';
+$page_css = [
+  'clinic_admin_panel.css',
+  'manage_reviews_tab.css'
+];
 
 $stmt = $pdo->prepare("
     SELECT 
@@ -160,7 +163,7 @@ include __DIR__ . '/../includes/header.php';
 
 				<form id="editDoctorForm" class="panel-form">
 					<select name="doctor_id">
-						<option value="">Оберіть лікаря...</option>
+						<option value="" disabled selected hidden>Оберіть лікаря...</option>
 						<?php foreach ($doctors as $doc): ?>
 								<option value="<?= $doc['doctor_id'] ?>">
 									<?= htmlspecialchars($doc['full_name']) ?> (<?= $doc['specialty'] ?>)
@@ -235,7 +238,7 @@ include __DIR__ . '/../includes/header.php';
 
 				<form id="deactivateDoctorForm" class="panel-form">
 					<select name="doctor_id">
-						<option value="">Оберіть лікаря...</option>
+						<option value="" disabled selected hidden>Оберіть лікаря...</option>
 						<?php foreach ($doctors as $doc): ?>
 							<?php if ($doc['status'] === 'active'): ?>
 								<option value="<?= $doc['doctor_id'] ?>">

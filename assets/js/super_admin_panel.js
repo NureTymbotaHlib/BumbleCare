@@ -1,6 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
   const tabs = document.querySelectorAll(".tabs .tab");
   const contents = document.querySelectorAll(".tab-content");
+  let reviewsReady = false;
+  let loadReviews = null;
+  let statusSelect = null;
+  let sortSelect = null;
 
   tabs.forEach((tab, index) => {
     tab.addEventListener("click", () => {
@@ -8,6 +12,11 @@ document.addEventListener("DOMContentLoaded", () => {
       contents.forEach(c => c.classList.add("hidden"));
       tab.classList.add("active");
       contents[index].classList.remove("hidden");
+      if (contents[index].id === "tab-reviews") {
+        statusSelect.value = "pending";
+        sortSelect.value = "date_desc";
+        loadReviews();
+      }
     });
   });
 
@@ -20,12 +29,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const editSelect = editForm.querySelector("select[name='admin_id']");
   const deactSelect = deactivateForm.querySelector("select[name='admin_id']");
 
-  function addAdminToSelects(adminId, fullName, clinicName = "") {
-    const label = clinicName ? `${fullName} — ${clinicName}` : fullName;
-
+  function addAdminToSelects(adminId, fullName) {
     const optEdit = document.createElement("option");
     optEdit.value = adminId;
-    optEdit.textContent = label;
+    optEdit.textContent = fullName;
 
     const optDeact = document.createElement("option");
     optDeact.value = adminId;
@@ -35,11 +42,9 @@ document.addEventListener("DOMContentLoaded", () => {
     deactSelect.appendChild(optDeact);
   }
 
-  function updateAdminOption(adminId, fullName, clinicName = "") {
-    const editLabel = clinicName ? `${fullName} — ${clinicName}` : fullName;
-
+  function updateAdminOption(adminId, fullName) {
     const e1 = editSelect.querySelector(`option[value="${adminId}"]`);
-    if (e1) e1.textContent = editLabel;
+    if (e1) e1.textContent = fullName;
 
     const e2 = deactSelect.querySelector(`option[value="${adminId}"]`);
     if (e2) e2.textContent = fullName;
@@ -120,7 +125,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await res.json();
 
       if (data.status === "success") {
-        addAdminToSelects(data.admin_id, fullName, data.clinic_name);
+        addAdminToSelects(data.admin_id, fullName);
         showPopupMessage("Адміністратора додано!", "success");
         addForm.reset();
       } else {
@@ -141,7 +146,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const fullName = editForm.querySelector("[name='full_name']").value.trim();
-    const clinicName = editForm.querySelector("select[name='clinic_id']").selectedOptions[0].textContent;
 
     const formData = new FormData(editForm);
     formData.append("action", "edit");
@@ -155,7 +159,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await res.json();
 
       if (data.status === "success") {
-        updateAdminOption(adminId, fullName, clinicName);
+        updateAdminOption(adminId, fullName);
         showPopupMessage("Дані адміністратора оновлено!", "success");
         editForm.reset();
       } else {
@@ -323,6 +327,7 @@ document.addEventListener("DOMContentLoaded", () => {
         editDoctorForm.querySelector("[name='date_of_birth']").value = data.doctor.date_of_birth ?? "";
         editDoctorForm.querySelector("[name='id_code']").value = data.doctor.id_code ?? "";
         editDoctorForm.querySelector("[name='about']").value = data.doctor.about ?? "";
+        editDoctorForm.querySelector("select[name='clinic_id']").value = data.doctor.clinic_id ?? "";
       } catch {
         showPopupMessage("Помилка звʼязку з сервером", "error");
       }
@@ -458,4 +463,107 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
+  // manage reviews
+  const reviewsForm = document.getElementById("reviewsFilterForm");
+  const reviewsContainer = document.getElementById("reviewsResultsContainer");
+  const resetReviewsBtn = document.getElementById("resetReviewsFilters");
+
+  if (reviewsForm && reviewsContainer) {
+
+    statusSelect = reviewsForm.querySelector("select[name='status']");
+    sortSelect = reviewsForm.querySelector("select[name='sort']");
+    const doctorInput = reviewsForm.querySelector("input[name='doctor_query']");
+    const clearDoctorBtn = document.getElementById("clearDoctorQuery");
+
+    loadReviews = async () => {
+      const formData = new FormData(reviewsForm);
+      formData.append("action", "list");
+
+      try {
+        const res = await fetch("/BumbleCare/handlers/admin_manage_reviews.php", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await res.json();
+
+        if (!data.success) {
+          reviewsContainer.innerHTML = "<p class='no-reviews'>Помилка завантаження.</p>";
+          return;
+        }
+
+        reviewsContainer.innerHTML = data.html;
+
+        if (typeof renderStars === "function") renderStars();
+        attachReviewButtons();
+
+      } catch {
+        reviewsContainer.innerHTML = "<p class='no-reviews'>Помилка зʼєднання.</p>";
+      }
+    };
+
+    doctorInput.addEventListener("input", () => {
+      clearDoctorBtn.style.display = doctorInput.value.trim() ? "inline" : "none";
+    });
+
+    clearDoctorBtn.addEventListener("click", () => {
+      doctorInput.value = "";
+      clearDoctorBtn.style.display = "none";
+      loadReviews();
+    });
+
+    function attachReviewButtons() {
+      document.querySelectorAll(".btn-approve").forEach(btn => {
+        btn.onclick = () => updateReviewStatus(btn.dataset.id, "approved");
+      });
+      document.querySelectorAll(".btn-reject").forEach(btn => {
+        btn.onclick = () => updateReviewStatus(btn.dataset.id, "rejected");
+      });
+      document.querySelectorAll(".btn-hide").forEach(btn => {
+        btn.onclick = () => updateReviewStatus(btn.dataset.id, "hidden");
+      });
+    }
+
+    async function updateReviewStatus(id, status) {
+      const formData = new FormData();
+      formData.append("action", "update");
+      formData.append("review_id", id);
+      formData.append("status", status);
+
+      const res = await fetch("/BumbleCare/handlers/admin_manage_reviews.php", {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        showPopupMessage("Статус відгуку оновлено!", "success");
+        loadReviews();
+      } else {
+        showPopupMessage(data.error || "Помилка оновлення статусу", "error");
+      }
+    }
+
+    reviewsForm.addEventListener("submit", e => {
+      e.preventDefault();
+      loadReviews();
+    });
+
+    if (sortSelect) {
+      sortSelect.addEventListener("change", loadReviews);
+    }
+
+    if (resetReviewsBtn) {
+      resetReviewsBtn.addEventListener("click", () => {
+        statusSelect.value = "pending";
+        sortSelect.value = "date_desc";
+        loadReviews();
+      });
+    }
+
+    reviewsReady = true;
+  }
+
 });
