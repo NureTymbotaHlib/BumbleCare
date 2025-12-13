@@ -210,7 +210,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image']) && 
         </div>
         <div class="form-group">
           <label>Медкарта</label>
-          <input type="text" name="medcard" value="<?= htmlspecialchars($user['medcard'] ?? '') ?>" disabled>
+
+          <a
+            href="<?= htmlspecialchars($user['medcard']) ?>"
+            target="_blank"
+            class="medical-card-view"
+            id="medicalCardView"
+            <?= empty($user['medcard']) ? 'style="display:none"' : '' ?>
+          >
+            <?= htmlspecialchars(basename($user['medcard'])) ?>
+          </a>
+
+          <input
+            type="file"
+            name="medical_card_file"
+            id="medicalCardInput"
+            class="medical-card-input"
+            accept=".pdf,.doc,.docx,.txt"
+            disabled
+          >
         </div>
       </div>
 

@@ -247,6 +247,44 @@
   border-color: #5482C4;
 }
 
+.medical-card-field {
+  position: relative;
+  width: 100%;
+}
+
+.medical-card-field input[type="file"] {
+  width: 100%;
+  padding: 0.7rem;
+  opacity: 0;
+  cursor: pointer;
+  position: relative;
+  z-index: 2;
+}
+
+.medical-card-field input[type="file"]:disabled {
+  pointer-events: none;
+}
+
+.medical-card-link {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  padding: 0.7rem;
+  background: #f1f1f1;
+  border: 1px solid #668AD2;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  color: #003399;
+  text-decoration: underline;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.medical-card-link:hover {
+  color: #001f66;
+}
+
 #edit-btn {
   width: 100%;
   margin-top: 1.5rem;

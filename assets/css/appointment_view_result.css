@@ -61,6 +61,16 @@
   color: #111;
 }
 
+.medical-card-link {
+  color: #111;
+  text-decoration: underline;
+}
+
+.medical-card-link:hover {
+  color: #5482C4;
+}
+
+
 .btn-back {
   background: #668AD2;
   color: #111;

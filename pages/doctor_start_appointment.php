@@ -107,7 +107,20 @@ $endTime = (clone $startTime)->modify('+20 minutes');
         <p><strong>Вік:</strong> <?= htmlspecialchars($age) ?></p>
         <p><strong>Стать:</strong> <?= htmlspecialchars($appt['gender'] ?: '—') ?></p>
         <p><strong>Страховий номер:</strong> <?= htmlspecialchars($appt['insurance_number'] ?: '—') ?></p>
-        <p><strong>Медична карта:</strong> <?= nl2br(htmlspecialchars($appt['medical_card'] ?: '—')) ?></p>
+        <p>
+          <strong>Медична карта:</strong>
+          <?php if (!empty($appt['medical_card'])): ?>
+            <a
+              href="<?= htmlspecialchars($appt['medical_card']) ?>"
+              target="_blank"
+              class="medical-card-link"
+            >
+              <?= htmlspecialchars(basename($appt['medical_card'])) ?>
+            </a>
+          <?php else: ?>
+            —
+          <?php endif; ?>
+        </p>
       </div>
     </div>
 

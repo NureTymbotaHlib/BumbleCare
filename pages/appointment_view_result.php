@@ -126,9 +126,20 @@ $avatar = htmlspecialchars($appt['profile_image'] ?? '/BumbleCare/assets/images/
 						<p class="insurance-number"><strong>Страховий номер пацієнта:</strong> 
 							<?= htmlspecialchars($appt['insurance_number'] ?: '—') ?>
 						</p>
-						<p class="medical-card"><strong>Медична карта:</strong> 
-							<?= nl2br(htmlspecialchars($appt['medical_card'] ?: '—')) ?>
-						</p>
+            <p class="medical-card">
+              <strong>Медична карта:</strong>
+              <?php if (!empty($appt['medical_card'])): ?>
+                <a 
+                  href="<?= htmlspecialchars($appt['medical_card']) ?>" 
+                  target="_blank"
+                  class="medical-card-link"
+                >
+                  <?= htmlspecialchars(basename($appt['medical_card'])) ?>
+                </a>
+              <?php else: ?>
+                —
+              <?php endif; ?>
+            </p>
 					<?php endif; ?>
 
           <p class="appointment-date">

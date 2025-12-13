@@ -95,6 +95,15 @@
   gap: 1rem;
 }
 
+.medical-card-link {
+  color: #111;
+  text-decoration: underline;
+}
+
+.medical-card-link:hover {
+  color: #5482C4;
+}
+
 .appointment-form {
   width: 100%;
   background: rgba(124, 98, 178, 0.39);
