@@ -26,40 +26,82 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // if (!addForm || !editForm || !deactivateForm) return;
 
-  const editSelect = editForm.querySelector("select[name='admin_id']");
-  const deactSelect = deactivateForm.querySelector("select[name='admin_id']");
+  const editAdminClinicSelect = document.getElementById("editAdminClinicSelect");
+  const deactivateAdminClinicSelect = document.getElementById("deactivateAdminClinicSelect");
 
-  function addAdminToSelects(adminId, fullName) {
-    const optEdit = document.createElement("option");
-    optEdit.value = adminId;
-    optEdit.textContent = fullName;
+  const editAdminSelect = document.getElementById("editAdminSelect");
+  const deactivateAdminSelect = document.getElementById("deactivateAdminSelect");
 
-    const optDeact = document.createElement("option");
-    optDeact.value = adminId;
-    optDeact.textContent = fullName;
+  const adminStore = new Map();
 
-    editSelect.appendChild(optEdit);
-    deactSelect.appendChild(optDeact);
+  document
+    .querySelectorAll("#editAdminSelect option[data-clinic]")
+    .forEach(opt => {
+      adminStore.set(opt.value, {
+        fullName: opt.textContent,
+        clinicId: opt.dataset.clinic
+      });
+    });
+  
+  function renderAdminSelect(selectEl, clinicId) {
+    if (!selectEl) return;
+
+    selectEl.innerHTML = '<option value="" disabled selected hidden>Оберіть адміністратора...</option>';
+
+    for (const [adminId, admin] of adminStore.entries()) {
+      if (clinicId && String(admin.clinicId) !== String(clinicId)) continue;
+
+      const opt = document.createElement("option");
+      opt.value = adminId;
+      opt.textContent = admin.fullName;
+      opt.dataset.clinic = admin.clinicId;
+
+      selectEl.appendChild(opt);
+    }
   }
 
-  function updateAdminOption(adminId, fullName) {
-    const e1 = editSelect.querySelector(`option[value="${adminId}"]`);
-    if (e1) e1.textContent = fullName;
-
-    const e2 = deactSelect.querySelector(`option[value="${adminId}"]`);
-    if (e2) e2.textContent = fullName;
+  if (editAdminClinicSelect) {
+    editAdminClinicSelect.addEventListener("change", () => {
+      renderAdminSelect(editAdminSelect, editAdminClinicSelect.value);
+    });
   }
 
-  function removeAdminFromSelects(adminId) {
-    const e1 = editSelect.querySelector(`option[value="${adminId}"]`);
-    if (e1) e1.remove();
-
-    const e2 = deactSelect.querySelector(`option[value="${adminId}"]`);
-    if (e2) e2.remove();
+  if (deactivateAdminClinicSelect) {
+    deactivateAdminClinicSelect.addEventListener("change", () => {
+      renderAdminSelect(deactivateAdminSelect, deactivateAdminClinicSelect.value);
+    });
   }
 
-  editSelect.addEventListener("change", async () => {
-    const adminId = editSelect.value;
+  function addAdminToStore(adminId, fullName, clinicId) {
+    adminStore.set(String(adminId), {
+      fullName,
+      clinicId
+    });
+
+    renderAdminSelect(editAdminSelect, editAdminClinicSelect?.value || "");
+    renderAdminSelect(deactivateAdminSelect, deactivateAdminClinicSelect?.value || "");
+  }
+
+  function updateAdminInStore(adminId, fullName, clinicId) {
+    const key = String(adminId);
+    if (!adminStore.has(key)) return;
+
+    adminStore.get(key).fullName = fullName;
+    adminStore.get(key).clinicId = clinicId;
+
+    renderAdminSelect(editAdminSelect, editAdminClinicSelect?.value || "");
+    renderAdminSelect(deactivateAdminSelect, deactivateAdminClinicSelect?.value || "");
+  }
+
+  function removeAdminFromStore(adminId) {
+    adminStore.delete(String(adminId));
+
+    renderAdminSelect(editAdminSelect, editAdminClinicSelect?.value || "");
+    renderAdminSelect(deactivateAdminSelect, deactivateAdminClinicSelect?.value || "");
+  }
+
+  editAdminSelect.addEventListener("change", async () => {
+    const adminId = editAdminSelect.value;
     if (!adminId) return;
 
     const formData = new FormData();
@@ -125,7 +167,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await res.json();
 
       if (data.status === "success") {
-        addAdminToSelects(data.admin_id, fullName);
+        addAdminToStore(data.admin_id, fullName, clinicId);
         showPopupMessage("Адміністратора додано!", "success");
         addForm.reset();
       } else {
@@ -147,6 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const fullName = editForm.querySelector("[name='full_name']").value.trim();
 
+    const clinicId = editForm.querySelector("[name='clinic_id']").value;
     const formData = new FormData(editForm);
     formData.append("action", "edit");
 
@@ -159,7 +202,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await res.json();
 
       if (data.status === "success") {
-        updateAdminOption(adminId, fullName);
+        updateAdminInStore(adminId, fullName, clinicId);
         showPopupMessage("Дані адміністратора оновлено!", "success");
         editForm.reset();
       } else {
@@ -191,7 +234,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await res.json();
 
       if (data.status === "success") {
-        removeAdminFromSelects(adminId);
+        removeAdminFromStore(adminId);
         showPopupMessage("Адміністратора деактивовано", "success");
         deactivateForm.reset();
       } else {
@@ -251,7 +294,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderDoctorSelect(selectEl, clinicId, { activeOnly = false } = {}) {
     if (!selectEl) return;
 
-    selectEl.innerHTML = '<option value="">Оберіть лікаря...</option>';
+    selectEl.innerHTML = '<option value="" disabled selected hidden>Оберіть лікаря...</option>';
 
     for (const [doctorId, doc] of doctorStore.entries()) {
       if (activeOnly && !doc.active) continue;
@@ -566,4 +609,221 @@ document.addEventListener("DOMContentLoaded", () => {
     reviewsReady = true;
   }
 
+  // manage patients
+  const editPatientSelect = document.getElementById("editPatientSelect");
+  const deactPatientSelect = document.getElementById("deactivatePatientSelect");
+
+  const addPatientForm = document.getElementById("addPatientForm");
+  const editPatientForm = document.getElementById("editPatientForm");
+  const deactivatePatientForm = document.getElementById("deactivatePatientForm");
+
+  const patientStore = new Map();
+
+  document
+    .querySelectorAll("#editPatientSelect option[value]")
+    .forEach(opt => {
+      if (!opt.value) return;
+
+      patientStore.set(opt.value, {
+        fullName: opt.textContent,
+        active: true
+      });
+    });
+
+  function renderPatientSelect(selectEl, { activeOnly = false } = {}) {
+    if (!selectEl) return;
+
+    selectEl.innerHTML = '<option value="" disabled selected hidden>Оберіть пацієнта...</option>';
+
+    for (const [patientId, patient] of patientStore.entries()) {
+      if (activeOnly && !patient.active) continue;
+
+      const opt = document.createElement("option");
+      opt.value = patientId;
+      opt.textContent = patient.fullName;
+
+      selectEl.appendChild(opt);
+    }
+  }
+
+  function addPatientToSelects(patientId, fullName) {
+    patientStore.set(String(patientId), {
+      fullName,
+      active: true
+    });
+
+    renderPatientSelect(editPatientSelect, { activeOnly: true });
+    renderPatientSelect(deactPatientSelect, { activeOnly: true });
+  }
+
+  function updatePatientOption(patientId, fullName) {
+    const key = String(patientId);
+    if (!patientStore.has(key)) return;
+
+    patientStore.get(key).fullName = fullName;
+
+    renderPatientSelect(editPatientSelect, { activeOnly: true });
+    renderPatientSelect(deactPatientSelect, { activeOnly: true });
+  }
+
+  function deactivatePatientInStore(patientId) {
+    const key = String(patientId);
+    if (!patientStore.has(key)) return;
+
+    patientStore.get(key).active = false;
+
+    renderPatientSelect(editPatientSelect, { activeOnly: true });
+    renderPatientSelect(deactPatientSelect, { activeOnly: true });
+  }
+
+  if (editPatientSelect) {
+    editPatientSelect.addEventListener("change", async () => {
+      const patientId = editPatientSelect.value;
+      if (!patientId) return;
+
+      const formData = new FormData();
+      formData.append("action", "get_patient");
+      formData.append("patient_id", patientId);
+
+      try {
+        const res = await fetch("/BumbleCare/handlers/super_admin_manage_patients.php", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await res.json();
+
+        if (data.status !== "success") {
+          showPopupMessage(data.message || "Не вдалося отримати дані пацієнта", "error");
+          return;
+        }
+
+        editPatientForm.querySelector("[name='full_name']").value = data.patient.full_name ?? "";
+        editPatientForm.querySelector("[name='email']").value = data.patient.email ?? "";
+        editPatientForm.querySelector("[name='phone']").value = data.patient.phone ?? "";
+
+      } catch {
+        showPopupMessage("Помилка звʼязку з сервером", "error");
+      }
+    });
+  }
+
+  if (addPatientForm) {
+    addPatientForm.addEventListener("submit", async e => {
+      e.preventDefault();
+
+      const fullName = addPatientForm.querySelector("[name='full_name']").value.trim();
+      const email = addPatientForm.querySelector("[name='email']").value.trim();
+      const phone = addPatientForm.querySelector("[name='phone']").value.trim();
+      const pw = addPatientForm.querySelector("[name='password']").value.trim();
+      const conf = addPatientForm.querySelector("[name='confirm_password']").value.trim();
+
+      if (!fullName || !email || !phone || !pw || !conf) {
+        showPopupMessage("Усі поля обовʼязкові", "error");
+        return;
+      }
+
+      if (pw !== conf) {
+        showPopupMessage("Паролі не співпадають", "error");
+        return;
+      }
+
+      if (pw.length < 6) {
+        showPopupMessage("Пароль має бути не менше 6 символів", "error");
+        return;
+      }
+
+      const formData = new FormData(addPatientForm);
+      formData.append("action", "add");
+
+      try {
+        const res = await fetch("/BumbleCare/handlers/super_admin_manage_patients.php", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await res.json();
+
+        if (data.status === "success") {
+          addPatientToSelects(data.patient_id, data.full_name);
+          showPopupMessage("Пацієнта додано", "success");
+          addPatientForm.reset();
+        } else {
+          showPopupMessage(data.message || "Помилка", "error");
+        }
+      } catch {
+        showPopupMessage("Помилка зʼєднання з сервером", "error");
+      }
+    });
+  }
+
+  if (editPatientForm) {
+    editPatientForm.addEventListener("submit", async e => {
+      e.preventDefault();
+
+      const patientId = editPatientForm.querySelector("[name='patient_id']").value;
+      if (!patientId) {
+        showPopupMessage("Оберіть пацієнта", "error");
+        return;
+      }
+
+      const fullName = editPatientForm.querySelector("[name='full_name']").value.trim();
+
+      const formData = new FormData(editPatientForm);
+      formData.append("action", "edit");
+
+      try {
+        const res = await fetch("/BumbleCare/handlers/super_admin_manage_patients.php", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await res.json();
+
+        if (data.status === "success") {
+          updatePatientOption(patientId, fullName);
+          showPopupMessage("Дані пацієнта оновлено", "success");
+          editPatientForm.reset();
+        } else {
+          showPopupMessage(data.message || "Помилка", "error");
+        }
+      } catch {
+        showPopupMessage("Помилка зʼєднання з сервером", "error");
+      }
+    });
+  }
+
+  if (deactivatePatientForm) {
+    deactivatePatientForm.addEventListener("submit", async e => {
+      e.preventDefault();
+
+      const patientId = deactivatePatientForm.querySelector("[name='patient_id']").value;
+      if (!patientId) {
+        showPopupMessage("Оберіть пацієнта", "error");
+        return;
+      }
+
+      const formData = new FormData(deactivatePatientForm);
+      formData.append("action", "deactivate");
+
+      try {
+        const res = await fetch("/BumbleCare/handlers/super_admin_manage_patients.php", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await res.json();
+
+        if (data.status === "success") {
+          deactivatePatientInStore(patientId);
+          showPopupMessage("Пацієнта деактивовано", "success");
+          deactivatePatientForm.reset();
+        } else {
+          showPopupMessage(data.message || "Помилка", "error");
+        }
+      } catch {
+        showPopupMessage("Помилка зʼєднання з сервером", "error");
+      }
+    });
+  }
 });

@@ -23,10 +23,9 @@ $allClinics = $pdo->query("
 ")->fetchAll(PDO::FETCH_ASSOC);
 
 $admins = $pdo->query("
-    SELECT ca.admin_id, u.full_name, c.name AS clinic_name
+    SELECT ca.admin_id, u.full_name, ca.clinic_id
     FROM clinic_admins ca
     JOIN users u ON ca.user_id = u.user_id
-    JOIN clinics c ON ca.clinic_id = c.clinic_id
     WHERE u.status = 'active'
 ")->fetchAll(PDO::FETCH_ASSOC);
 
@@ -39,6 +38,16 @@ $doctors = $pdo->query("
     d.clinic_id
   FROM doctors d
   JOIN users u ON d.user_id = u.user_id
+  ORDER BY u.full_name ASC
+")->fetchAll(PDO::FETCH_ASSOC);
+
+$patients = $pdo->query("
+  SELECT
+    p.patient_id,
+    u.full_name,
+    u.status
+  FROM patients p
+  JOIN users u ON p.user_id = u.user_id
   ORDER BY u.full_name ASC
 ")->fetchAll(PDO::FETCH_ASSOC);
 
@@ -347,17 +356,31 @@ include __DIR__ . '/../includes/header.php';
       <section class="panel-section">
         <h2>Редагувати адміністратора клініки</h2>
         <form id="editClinicAdminForm" class="panel-form">
+          <div class="form-group">
+            <select id="editAdminClinicSelect">
+              <option value="" disabled selected hidden>Оберіть клініку...</option>
+              <?php foreach ($allClinics as $cl): ?>
+                <option value="<?= $cl['clinic_id'] ?>">
+                  <?= htmlspecialchars($cl['name']) ?>
+                </option>
+              <?php endforeach; ?>
+            </select>
+          </div>
 
-          <select name="admin_id">
-            <option value="" disabled selected hidden>Оберіть адміністратора...</option>
+          <div class="form-group">
+            <select name="admin_id" id="editAdminSelect">
+              <option value="" disabled selected hidden>Оберіть адміністратора...</option>
 
-            <?php foreach ($admins as $a): ?>
-              <option value="<?= $a['admin_id'] ?>">
-                <?= htmlspecialchars($a['full_name']) ?>
-              </option>
-            <?php endforeach; ?>
-
-          </select>
+              <?php foreach ($admins as $a): ?>
+                <option
+                  value="<?= $a['admin_id'] ?>"
+                  data-clinic="<?= $a['clinic_id'] ?>"
+                >
+                  <?= htmlspecialchars($a['full_name']) ?>
+                </option>
+              <?php endforeach; ?>
+            </select>
+          </div>
 
           <div class="form-group">
             <label>Повне ім’я адміністратора</label>
@@ -392,16 +415,31 @@ include __DIR__ . '/../includes/header.php';
         <h2>Деактивувати адміністратора</h2>
 
         <form id="deactivateClinicAdminForm" class="panel-form">
-          <select name="admin_id">
-            <option value="" disabled selected hidden>Оберіть адміністратора...</option>
+          <div class="form-group">
+            <select id="deactivateAdminClinicSelect">
+              <option value="" disabled selected hidden>Оберіть клініку...</option>
+              <?php foreach ($allClinics as $cl): ?>
+                <option value="<?= $cl['clinic_id'] ?>">
+                  <?= htmlspecialchars($cl['name']) ?>
+                </option>
+              <?php endforeach; ?>
+            </select>
+          </div>
 
-            <?php foreach ($admins as $a): ?>
-              <option value="<?= $a['admin_id'] ?>">
-                <?= htmlspecialchars($a['full_name']) ?>
-              </option>
-            <?php endforeach; ?>
+          <div class="form-group">
+            <select name="admin_id" id="deactivateAdminSelect">
+              <option value="" disabled selected hidden>Оберіть адміністратора...</option>
 
-          </select>
+              <?php foreach ($admins as $a): ?>
+                <option
+                  value="<?= $a['admin_id'] ?>"
+                  data-clinic="<?= $a['clinic_id'] ?>"
+                >
+                  <?= htmlspecialchars($a['full_name']) ?>
+                </option>
+              <?php endforeach; ?>
+            </select>
+          </div>
 
           <button type="submit" class="btn-submit btn-red">
             Деактивувати
@@ -464,8 +502,105 @@ include __DIR__ . '/../includes/header.php';
 
     <div class="tab-content hidden" id="tab-users">
       <section class="panel-section">
-        <h2>Управління користувачами</h2>
-        <p>Тут можна буде переглядати всіх користувачів, їх ролі та статуси.</p>
+        <h2>Додати пацієнта</h2>
+
+        <form id="addPatientForm" class="panel-form">
+          <div class="form-group">
+            <label>Повне ім’я пацієнта</label>
+            <input type="text" name="full_name" placeholder="Введіть ПІБ пацієнта">
+          </div>
+
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" placeholder="Введіть пошту пацієнта">
+          </div>
+
+          <div class="form-group">
+            <label>Початковий пароль</label>
+            <div class="password-input-wrapper">
+              <input type="password" name="password" placeholder="Введіть пароль">
+              <button type="button" class="toggle-password">
+                <img src="/BumbleCare/assets/icons/eye-closed.svg" class="eye-icon">
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Підтвердження пароля</label>
+            <div class="password-input-wrapper">
+              <input type="password" name="confirm_password" placeholder="Повторіть пароль">
+              <button type="button" class="toggle-password">
+                <img src="/BumbleCare/assets/icons/eye-closed.svg" class="eye-icon">
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Номер телефону</label>
+            <input type="text" name="phone" placeholder="Введіть номер телефону пацієнта">
+          </div>
+
+          <button type="submit" class="btn-submit">Додати пацієнта</button>
+        </form>
+      </section>
+
+      <section class="panel-section">
+        <h2>Редагувати пацієнта</h2>
+
+        <form id="editPatientForm" class="panel-form">
+          <div class="form-group">
+            <select name="patient_id" id="editPatientSelect">
+              <option value="" disabled selected hidden>Оберіть пацієнта...</option>
+
+              <?php foreach ($patients as $p): ?>
+                <?php if ($p['status'] === 'active'): ?>
+                  <option value="<?= $p['patient_id'] ?>">
+                    <?= htmlspecialchars($p['full_name']) ?>
+                  </option>
+                <?php endif; ?>
+              <?php endforeach; ?>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Повне ім’я пацієнта</label>
+            <input type="text" name="full_name" placeholder="ПІБ пацієнта">
+          </div>
+
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" placeholder="Email пацієнта">
+          </div>
+
+          <div class="form-group">
+            <label>Номер телефону</label>
+            <input type="text" name="phone" placeholder="Номер телефону">
+          </div>
+
+          <button type="submit" class="btn-submit">Оновити пацієнта</button>
+        </form>
+      </section>
+
+      <section class="panel-section">
+        <h2>Деактивувати пацієнта</h2>
+
+        <form id="deactivatePatientForm" class="panel-form">
+          <div class="form-group">
+            <select name="patient_id" id="deactivatePatientSelect">
+              <option value="" disabled selected hidden>Оберіть пацієнта...</option>
+
+              <?php foreach ($patients as $p): ?>
+                <?php if ($p['status'] === 'active'): ?>
+                  <option value="<?= $p['patient_id'] ?>">
+                    <?= htmlspecialchars($p['full_name']) ?>
+                  </option>
+                <?php endif; ?>
+              <?php endforeach; ?>
+            </select>
+          </div>
+
+          <button type="submit" class="btn-submit btn-red">Деактивувати</button>
+        </form>
       </section>
     </div>
 
