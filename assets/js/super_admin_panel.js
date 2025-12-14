@@ -701,6 +701,13 @@ document.addEventListener("DOMContentLoaded", () => {
         editPatientForm.querySelector("[name='full_name']").value = data.patient.full_name ?? "";
         editPatientForm.querySelector("[name='email']").value = data.patient.email ?? "";
         editPatientForm.querySelector("[name='phone']").value = data.patient.phone ?? "";
+        editPatientForm.querySelector("[name='date_of_birth']").value = data.patient.date_of_birth ?? "";
+        editPatientForm.querySelector("[name='gender']").value = data.patient.gender ?? "";
+        editPatientForm.querySelector("[name='city']").value = data.patient.city ?? "";
+        editPatientForm.querySelector("[name='address']").value = data.patient.address ?? "";
+        editPatientForm.querySelector("[name='identification_code']").value = data.patient.identification_code ?? "";
+        editPatientForm.querySelector("[name='social_status']").value = data.patient.social_status ?? "";
+        editPatientForm.querySelector("[name='insurance_number']").value = data.patient.insurance_number ?? "";
 
       } catch {
         showPopupMessage("Помилка звʼязку з сервером", "error");
@@ -820,6 +827,169 @@ document.addEventListener("DOMContentLoaded", () => {
           deactivatePatientForm.reset();
         } else {
           showPopupMessage(data.message || "Помилка", "error");
+        }
+      } catch {
+        showPopupMessage("Помилка зʼєднання з сервером", "error");
+      }
+    });
+  }
+
+  // manage clinics
+  const clinicAddForm = document.getElementById("clinicAddForm");
+  const clinicEditForm = document.getElementById("clinicEditForm");
+  const clinicEditSelect = document.getElementById("clinicEditSelect");
+
+  const addClinicPhotoInput = document.getElementById("addClinicPhotoInput");
+  const addClinicPhotoPreview = document.getElementById("addClinicPhotoPreview");
+
+  const editClinicPhotoInput = document.getElementById("editClinicPhotoInput");
+  const editClinicPhotoPreview = document.getElementById("editClinicPhotoPreview");
+
+  const DEFAULT_CLINIC_PHOTO = "/BumbleCare/assets/images/default_clinic.jpg";
+
+  function bindImagePreview(input, img) {
+    if (!input || !img) return;
+
+    input.addEventListener("change", () => {
+      const file = input.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = e => img.src = e.target.result;
+      reader.readAsDataURL(file);
+    });
+  }
+  bindImagePreview(addClinicPhotoInput, addClinicPhotoPreview);
+  bindImagePreview(editClinicPhotoInput, editClinicPhotoPreview);
+
+  const clinicStore = new Map();
+
+  document
+    .querySelectorAll("#clinicEditSelect option[value]")
+    .forEach(opt => {
+      if (!opt.value) return;
+
+      clinicStore.set(opt.value, {
+        name: opt.textContent
+      });
+    });
+
+  if (clinicEditSelect) {
+    clinicEditSelect.addEventListener("change", async () => {
+      const clinicId = clinicEditSelect.value;
+      if (!clinicId) return;
+
+      const formData = new FormData();
+      formData.append("action", "get");
+      formData.append("clinic_id", clinicId);
+
+      try {
+        const res = await fetch("/BumbleCare/handlers/super_admin_manage_clinics.php", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await res.json();
+
+        if (data.status !== "success") {
+          showPopupMessage(data.message || "Не вдалося отримати дані клініки", "error");
+          return;
+        }
+
+        clinicEditForm.querySelector("[name='name']").value = data.clinic.name ?? "";
+        clinicEditForm.querySelector("[name='description']").value = data.clinic.description ?? "";
+        clinicEditForm.querySelector("[name='city']").value = data.clinic.city ?? "";
+        clinicEditForm.querySelector("[name='address']").value = data.clinic.address ?? "";
+        clinicEditForm.querySelector("[name='phone']").value = data.clinic.phone ?? "";
+        clinicEditForm.querySelector("[name='email']").value = data.clinic.email ?? "";
+        if (data.clinic.image_url) {
+          editClinicPhotoPreview.src = data.clinic.image_url;
+        } else {
+          editClinicPhotoPreview.src = DEFAULT_CLINIC_PHOTO;
+        }
+
+        editClinicPhotoInput.value = ""; 
+      } catch {
+        showPopupMessage("Помилка зʼєднання з сервером", "error");
+      }
+    });
+  }
+
+  if (clinicAddForm) {
+    clinicAddForm.addEventListener("submit", async e => {
+      e.preventDefault();
+
+      const formData = new FormData(clinicAddForm);
+      formData.append("action", "add");
+
+      try {
+        const res = await fetch("/BumbleCare/handlers/super_admin_manage_clinics.php", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await res.json();
+
+        if (data.status === "success") {
+          const opt = document.createElement("option");
+          opt.value = data.clinic_id;
+          opt.textContent = data.name;
+
+          clinicEditSelect.appendChild(opt);
+          clinicStore.set(String(data.clinic_id), { name: data.name });
+
+          showPopupMessage("Клініку додано", "success");
+          addClinicPhotoPreview.src = DEFAULT_CLINIC_PHOTO;
+          addClinicPhotoInput.value = "";
+          clinicAddForm.reset();
+        } else {
+          showPopupMessage(data.message || "Помилка додавання", "error");
+        }
+      } catch {
+        showPopupMessage("Помилка зʼєднання з сервером", "error");
+      }
+    });
+  }
+
+  if (clinicEditForm) {
+    clinicEditForm.addEventListener("submit", async e => {
+      e.preventDefault();
+
+      const clinicId = clinicEditSelect.value;
+      if (!clinicId) {
+        showPopupMessage("Оберіть клініку", "error");
+        return;
+      }
+
+      const formData = new FormData(clinicEditForm);
+      formData.append("action", "edit");
+      formData.append("clinic_id", clinicId);
+
+      try {
+        const res = await fetch("/BumbleCare/handlers/super_admin_manage_clinics.php", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await res.json();
+
+        if (data.status === "success") {
+          const newName = clinicEditForm.querySelector("[name='name']").value.trim();
+
+          const opt = clinicEditSelect.querySelector(`option[value="${clinicId}"]`);
+          if (opt) opt.textContent = newName;
+
+          clinicStore.get(String(clinicId)).name = newName;
+
+          showPopupMessage("Дані клініки оновлено", "success");
+          editClinicPhotoPreview.src = DEFAULT_CLINIC_PHOTO;
+          editClinicPhotoInput.value = "";
+
+          clinicEditForm.reset();
+          clinicEditSelect.value = "";
+
+        } else {
+          showPopupMessage(data.message || "Помилка оновлення", "error");
         }
       } catch {
         showPopupMessage("Помилка зʼєднання з сервером", "error");

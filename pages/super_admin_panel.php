@@ -64,7 +64,7 @@ include __DIR__ . '/../includes/header.php';
       </div>
       <div class="tab-block">
         <button class="tab">Управління відгуками</button>
-        <button class="tab">Управління користувачами</button>
+        <button class="tab">Управління пацієнтами</button>
         <button class="tab">Управління клініками</button>
       </div>
     </div>
@@ -577,6 +577,60 @@ include __DIR__ . '/../includes/header.php';
             <input type="text" name="phone" placeholder="Номер телефону">
           </div>
 
+          <div class="form-group">
+            <label>Дата народження</label>
+            <input type="date" name="date_of_birth" placeholder="Оберіть дату">
+          </div>
+
+          <div class="form-group">
+            <label>Стать</label>
+            <select name="gender">
+              <option value="">Оберіть стать</option>
+              <option value="male">Чоловіча</option>
+              <option value="female">Жіноча</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Місто</label>
+            <input type="text" name="city" placeholder="Місто">
+          </div>
+
+          <div class="form-group">
+            <label>Адреса</label>
+            <input type="text" name="address" placeholder="Вулиця, будинок, квартира">
+          </div>
+
+          <div class="form-group">
+            <label>Ідентифікаційний код</label>
+            <input type="text" name="identification_code" placeholder="Ідентифікаційний код пацієнта">
+          </div>
+
+          <div class="form-group">
+            <label>Соціальний статус</label>
+            <select name="social_status">
+              <option value="" disabled selected hidden>Оберіть статус...</option>
+              <option value="особа з інвалідністю I групи">особа з інвалідністю I групи</option>
+              <option value="особа з інвалідністю II групи">особа з інвалідністю II групи</option>
+              <option value="особа з інвалідністю III групи">особа з інвалідністю III групи</option>
+              <option value="ветеран війни">ветеран війни</option>
+              <option value="дитина війни">дитина війни</option>
+              <option value="учасник бойових дій">учасник бойових дій</option>
+              <option value="учасник ліквідації наслідків аварії на ЧАЕС">учасник ліквідації наслідків аварії на ЧАЕС</option>
+              <option value="пенсіонер">пенсіонер</option>
+              <option value="студент">студент</option>
+              <option value="безробітний">безробітний</option>
+              <option value="працюючий">працюючий</option>
+              <option value="багатодітна сімʼя">багатодітна сімʼя</option>
+              <option value="внутрішньо переміщена особа">внутрішньо переміщена особа</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Страховий номер</label>
+            <input type="text" name="insurance_number" placeholder="Номер страхового полісу">
+          </div>
+
           <button type="submit" class="btn-submit">Оновити пацієнта</button>
         </form>
       </section>
@@ -606,8 +660,127 @@ include __DIR__ . '/../includes/header.php';
 
     <div class="tab-content hidden" id="tab-clinics">
       <section class="panel-section">
-        <h2>Управління клініками</h2>
-        <p>Тут супер-адмін зможе створювати клініки, прив’язувати адміністраторів тощо.</p>
+        <h2>Додати клініку</h2>
+
+        <form id="clinicAddForm" class="panel-form" enctype="multipart/form-data">
+          <div class="form-group">
+            <label>Назва клініки</label>
+            <input type="text" name="name" placeholder="Назва клініки">
+          </div>
+
+          <div class="form-group">
+            <label>Опис</label>
+            <textarea name="description" placeholder="Опис клініки"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Місто</label>
+            <input type="text" name="city" placeholder="Місто">
+          </div>
+
+          <div class="form-group">
+            <label>Адреса</label>
+            <input type="text" name="address" placeholder="Адреса">
+          </div>
+
+          <div class="form-group">
+            <label>Телефон</label>
+            <input type="text" name="phone" placeholder="Телефон">
+          </div>
+
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" placeholder="Email">
+          </div>
+
+          <div class="form-group">
+            <label>Фото клініки</label>
+            <input
+              type="file"
+              name="clinic_photo"
+              id="addClinicPhotoInput"
+              accept=".jpg,.jpeg,.png"
+            >
+
+            <div class="clinic-photo-preview">
+              <img
+                id="addClinicPhotoPreview"
+                src="/BumbleCare/assets/images/default_clinic.jpg"
+                alt="Превʼю фото клініки"
+              >
+            </div>
+          </div>
+
+          <button type="submit" class="btn-submit">Додати клініку</button>
+        </form>
+      </section>
+
+      <section class="panel-section">
+        <h2>Редагувати клініку</h2>
+
+        <form id="clinicEditForm" class="panel-form" enctype="multipart/form-data">
+
+          <div class="form-group">
+            <select name="clinic_id" id="clinicEditSelect">
+              <option value="" disabled selected hidden>Оберіть клініку...</option>
+              <?php foreach ($allClinics as $cl): ?>
+                <option value="<?= $cl['clinic_id'] ?>">
+                  <?= htmlspecialchars($cl['name']) ?>
+                </option>
+              <?php endforeach; ?>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Назва клініки</label>
+            <input type="text" name="name" placeholder="Назва клініки">
+          </div>
+
+          <div class="form-group">
+            <label>Опис</label>
+            <textarea name="description" placeholder="Опис клініки"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Місто</label>
+            <input type="text" name="city" placeholder="Місто">
+          </div>
+
+          <div class="form-group">
+            <label>Адреса</label>
+            <input type="text" name="address" placeholder="Адреса">
+          </div>
+
+          <div class="form-group">
+            <label>Телефон</label>
+            <input type="text" name="phone" placeholder="Телефон">
+          </div>
+
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" placeholder="Email">
+          </div>
+
+          <div class="form-group">
+            <label>Фото клініки</label>
+            <input
+              type="file"
+              name="clinic_photo"
+              id="editClinicPhotoInput"
+              accept=".jpg,.jpeg,.png"
+            >
+
+            <div class="clinic-photo-preview">
+              <img
+                id="editClinicPhotoPreview"
+                src="/BumbleCare/assets/images/default_clinic.jpg"
+                alt="Поточне фото клініки"
+              >
+            </div>
+          </div>
+
+          <button type="submit" class="btn-submit">Оновити клініку</button>
+        </form>
       </section>
     </div>
 

@@ -93,7 +93,18 @@ if ($action === 'get_patient') {
   }
 
   $stmt = $pdo->prepare("
-    SELECT u.full_name, u.email, u.phone_number AS phone, u.status
+    SELECT
+      u.full_name,
+      u.email,
+      u.phone_number AS phone,
+      u.status,
+      p.date_of_birth,
+      p.gender,
+      p.city,
+      p.address,
+      p.identification_code,
+      p.social_status,
+      p.insurance_number
     FROM patients p
     JOIN users u ON p.user_id = u.user_id
     WHERE p.patient_id = ?
@@ -121,6 +132,13 @@ if ($action === 'edit') {
   $full = trim($_POST['full_name'] ?? '');
   $email = trim($_POST['email'] ?? '');
   $phone = trim($_POST['phone'] ?? '');
+  $date_of_birth = $_POST['date_of_birth'] ?? null;
+  $gender = $_POST['gender'] ?? null;
+  $city = trim($_POST['city'] ?? '');
+  $address = trim($_POST['address'] ?? '');
+  $identification_code = trim($_POST['identification_code'] ?? '');
+  $social_status = trim($_POST['social_status'] ?? '');
+  $insurance_number = trim($_POST['insurance_number'] ?? '');
 
   if (!$full || !$email || !$phone) {
     echo json_encode(['status' => 'error', 'message' => 'Усі поля обовʼязкові']);
@@ -158,11 +176,18 @@ if ($action === 'edit') {
   }
 
   $stmt = $pdo->prepare("
-    UPDATE users
-    SET full_name = ?, email = ?, phone_number = ?
-    WHERE user_id = ?
+    UPDATE patients
+    SET
+      date_of_birth = NULLIF(?, ''),
+      gender = NULLIF(?, ''),
+      city = NULLIF(?, ''),
+      address = NULLIF(?, ''),
+      identification_code = NULLIF(?, ''),
+      social_status = NULLIF(?, ''),
+      insurance_number = NULLIF(?, '')
+    WHERE patient_id = ?
   ");
-  $stmt->execute([$full, $email, $phone, $user_id]);
+  $stmt->execute([$date_of_birth, $gender, $city, $address, $identification_code, $social_status, $insurance_number, $patient_id]);
 
   echo json_encode(['status' => 'success', 'message' => 'Дані пацієнта оновлено']);
   exit;
