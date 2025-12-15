@@ -23,10 +23,9 @@ $allClinics = $pdo->query("
 ")->fetchAll(PDO::FETCH_ASSOC);
 
 $admins = $pdo->query("
-    SELECT ca.admin_id, u.full_name, ca.clinic_id
+    SELECT ca.admin_id, u.full_name, ca.clinic_id, u.status
     FROM clinic_admins ca
     JOIN users u ON ca.user_id = u.user_id
-    WHERE u.status = 'active'
 ")->fetchAll(PDO::FETCH_ASSOC);
 
 $doctors = $pdo->query("
@@ -292,6 +291,45 @@ include __DIR__ . '/../includes/header.php';
         </form>
       </section>
 
+      <section class="panel-section">
+        <h2>Активувати лікаря</h2>
+
+        <form id="activateDoctorForm" class="panel-form">
+
+          <div class="form-group">
+            <select id="activateClinicSelect">
+              <option value="" disabled selected hidden>Оберіть клініку...</option>
+              <?php foreach ($allClinics as $cl): ?>
+                <option value="<?= $cl['clinic_id'] ?>">
+                  <?= htmlspecialchars($cl['name']) ?>
+                </option>
+              <?php endforeach; ?>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <select name="doctor_id" id="activateDoctorSelect">
+              <option value="" disabled selected hidden>Оберіть лікаря...</option>
+
+              <?php foreach ($doctors as $doc): ?>
+                <?php if ($doc['status'] === 'inactive'): ?>
+                  <option
+                    value="<?= $doc['doctor_id'] ?>"
+                    data-clinic="<?= $doc['clinic_id'] ?>"
+                  >
+                    <?= htmlspecialchars($doc['full_name']) ?>
+                  </option>
+                <?php endif; ?>
+              <?php endforeach; ?>
+
+            </select>
+          </div>
+
+          <button type="submit" class="btn-submit">
+            Активувати
+          </button>
+        </form>
+      </section>
     </div>
 
     <div class="tab-content hidden" id="tab-admins">
@@ -372,12 +410,14 @@ include __DIR__ . '/../includes/header.php';
               <option value="" disabled selected hidden>Оберіть адміністратора...</option>
 
               <?php foreach ($admins as $a): ?>
-                <option
-                  value="<?= $a['admin_id'] ?>"
-                  data-clinic="<?= $a['clinic_id'] ?>"
-                >
-                  <?= htmlspecialchars($a['full_name']) ?>
-                </option>
+                <?php if ($a['status'] === 'active'): ?>
+                  <option
+                    value="<?= $a['admin_id'] ?>"
+                    data-clinic="<?= $a['clinic_id'] ?>"
+                  >
+                    <?= htmlspecialchars($a['full_name']) ?>
+                  </option>
+                <?php endif; ?>
               <?php endforeach; ?>
             </select>
           </div>
@@ -429,14 +469,15 @@ include __DIR__ . '/../includes/header.php';
           <div class="form-group">
             <select name="admin_id" id="deactivateAdminSelect">
               <option value="" disabled selected hidden>Оберіть адміністратора...</option>
-
               <?php foreach ($admins as $a): ?>
-                <option
-                  value="<?= $a['admin_id'] ?>"
-                  data-clinic="<?= $a['clinic_id'] ?>"
-                >
-                  <?= htmlspecialchars($a['full_name']) ?>
-                </option>
+                <?php if ($a['status'] === 'active'): ?>
+                  <option
+                    value="<?= $a['admin_id'] ?>"
+                    data-clinic="<?= $a['clinic_id'] ?>"
+                  >
+                    <?= htmlspecialchars($a['full_name']) ?>
+                  </option>
+                <?php endif; ?>
               <?php endforeach; ?>
             </select>
           </div>
@@ -447,8 +488,46 @@ include __DIR__ . '/../includes/header.php';
         </form>
       </section>
 
-    </div>
+      <section class="panel-section">
+        <h2>Активувати адміністратора</h2>
 
+        <form id="activateClinicAdminForm" class="panel-form">
+
+          <div class="form-group">
+            <select id="activateAdminClinicSelect">
+              <option value="" disabled selected hidden>Оберіть клініку...</option>
+              <?php foreach ($allClinics as $cl): ?>
+                <option value="<?= $cl['clinic_id'] ?>">
+                  <?= htmlspecialchars($cl['name']) ?>
+                </option>
+              <?php endforeach; ?>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <select name="admin_id" id="activateAdminSelect">
+              <option value="" disabled selected hidden>Оберіть адміністратора...</option>
+
+              <?php foreach ($admins as $a): ?>
+                <?php if ($a['status'] === 'inactive'): ?>
+                  <option
+                    value="<?= $a['admin_id'] ?>"
+                    data-clinic="<?= $a['clinic_id'] ?>"
+                  >
+                    <?= htmlspecialchars($a['full_name']) ?>
+                  </option>
+                <?php endif; ?>
+              <?php endforeach; ?>
+
+            </select>
+          </div>
+
+          <button type="submit" class="btn-submit">
+            Активувати
+          </button>
+        </form>
+      </section>
+    </div>
 
 		<div class="tab-content hidden" id="tab-reviews">
 			<section class="panel-section">
@@ -654,6 +733,30 @@ include __DIR__ . '/../includes/header.php';
           </div>
 
           <button type="submit" class="btn-submit btn-red">Деактивувати</button>
+        </form>
+      </section>
+
+      <section class="panel-section">
+        <h2>Активувати пацієнта</h2>
+
+        <form id="activatePatientForm" class="panel-form">
+          <div class="form-group">
+            <select name="patient_id" id="activatePatientSelect">
+              <option value="" disabled selected hidden>Оберіть пацієнта...</option>
+
+              <?php foreach ($patients as $p): ?>
+                <?php if ($p['status'] === 'inactive'): ?>
+                  <option value="<?= $p['patient_id'] ?>">
+                    <?= htmlspecialchars($p['full_name']) ?>
+                  </option>
+                <?php endif; ?>
+              <?php endforeach; ?>
+            </select>
+          </div>
+
+          <button type="submit" class="btn-submit">
+            Активувати
+          </button>
         </form>
       </section>
     </div>

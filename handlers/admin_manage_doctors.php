@@ -270,6 +270,47 @@ if ($action === 'deactivate') {
   exit;
 }
 
+if ($action === 'activate') {
+
+  $doctor_id = $_POST['doctor_id'] ?? null;
+
+  if (!$doctor_id || !canManageDoctor($pdo, $doctor_id, $clinic_id, $user_role)) {
+    echo json_encode(['status' => 'error', 'message' => 'Лікар не знайдений або не належить вашій клініці']);
+    exit;
+  }
+
+  $stmt = $pdo->prepare("
+    SELECT u.user_id, u.status, u.full_name, d.specialty
+    FROM doctors d
+    JOIN users u ON d.user_id = u.user_id
+    WHERE d.doctor_id = ?
+  ");
+  $stmt->execute([$doctor_id]);
+  $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+  if (!$row) {
+    echo json_encode(['status' => 'error', 'message' => 'Помилка при зміні статусу']);
+    exit;
+  }
+
+  if ($row['status'] !== 'inactive') {
+    echo json_encode(['status' => 'error', 'message' => 'Лікар вже активований']);
+    exit;
+  }
+
+  $pdo->prepare("UPDATE users SET status = 'active' WHERE user_id = ?")
+    ->execute([$row['user_id']]);
+
+  echo json_encode([
+    'status' => 'success',
+    'message' => 'Лікаря активовано',
+    'doctor_id' => $doctor_id,
+    'full_name' => $row['full_name'],
+    'specialty' => $row['specialty']
+  ]);
+  exit;
+}
+
 if ($action === 'get_doctor') {
 
   $doctor_id = $_POST['doctor_id'] ?? null;

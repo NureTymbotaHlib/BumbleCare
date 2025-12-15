@@ -77,7 +77,7 @@ $doctors_stmt = $pdo->prepare("
   FROM doctors d
   JOIN users u ON d.user_id = u.user_id
   WHERE d.clinic_id = ?
-    AND u.status = 'active'
+    ORDER BY u.full_name ASC
 ");
 $doctors_stmt->execute([$clinic_id]);
 $doctors = $doctors_stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -249,6 +249,25 @@ include __DIR__ . '/../includes/header.php';
 					</select>
 
 					<button type="submit" class="btn-submit btn-red">Деактивувати</button>
+				</form>
+			</section>
+
+			<section class="panel-section">
+				<h2>Активувати лікаря</h2>
+
+				<form id="activateDoctorForm" class="panel-form">
+					<select name="doctor_id">
+						<option value="" disabled selected hidden>Оберіть лікаря...</option>
+						<?php foreach ($doctors as $doc): ?>
+							<?php if (($doc['status'] ?? '') === 'inactive'): ?>
+								<option value="<?= $doc['doctor_id'] ?>">
+									<?= htmlspecialchars($doc['full_name']) ?>
+								</option>
+							<?php endif; ?>
+						<?php endforeach; ?>
+					</select>
+
+					<button type="submit" class="btn-submit">Активувати</button>
 				</form>
 			</section>
 		</div>

@@ -23,32 +23,54 @@ document.addEventListener("DOMContentLoaded", () => {
   const addForm = document.getElementById("addClinicAdminForm");
   const editForm = document.getElementById("editClinicAdminForm");
   const deactivateForm = document.getElementById("deactivateClinicAdminForm");
+  const activateAdminForm = document.getElementById("activateClinicAdminForm");
 
   // if (!addForm || !editForm || !deactivateForm) return;
 
   const editAdminClinicSelect = document.getElementById("editAdminClinicSelect");
   const deactivateAdminClinicSelect = document.getElementById("deactivateAdminClinicSelect");
+  const activateAdminClinicSelect = document.getElementById("activateAdminClinicSelect");
 
   const editAdminSelect = document.getElementById("editAdminSelect");
   const deactivateAdminSelect = document.getElementById("deactivateAdminSelect");
+  const activateAdminSelect = document.getElementById("activateAdminSelect");
 
   const adminStore = new Map();
 
-  document
-    .querySelectorAll("#editAdminSelect option[data-clinic]")
+  document.querySelectorAll("#editAdminSelect option[data-clinic], #deactivateAdminSelect option[data-clinic], #activateAdminSelect option[data-clinic]")
     .forEach(opt => {
       adminStore.set(opt.value, {
         fullName: opt.textContent,
-        clinicId: opt.dataset.clinic
+        clinicId: opt.dataset.clinic,
+        active: opt.closest("#activateAdminSelect") ? false : true
       });
     });
-  
-  function renderAdminSelect(selectEl, clinicId) {
+
+  function renderAdminSelect(selectEl, clinicId, { activeOnly = false } = {}) {
     if (!selectEl) return;
 
     selectEl.innerHTML = '<option value="" disabled selected hidden>Оберіть адміністратора...</option>';
 
     for (const [adminId, admin] of adminStore.entries()) {
+      if (activeOnly && !admin.active) continue;
+      if (clinicId && String(admin.clinicId) !== String(clinicId)) continue;
+
+      const opt = document.createElement("option");
+      opt.value = adminId;
+      opt.textContent = admin.fullName;
+      opt.dataset.clinic = admin.clinicId;
+
+      selectEl.appendChild(opt);
+    }
+  }
+  
+  function renderInactiveAdminSelect(selectEl, clinicId) {
+    if (!selectEl) return;
+
+    selectEl.innerHTML ='<option value="" disabled selected hidden>Оберіть адміністратора...</option>';
+
+    for (const [adminId, admin] of adminStore.entries()) {
+      if (admin.active) continue;
       if (clinicId && String(admin.clinicId) !== String(clinicId)) continue;
 
       const opt = document.createElement("option");
@@ -62,24 +84,35 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (editAdminClinicSelect) {
     editAdminClinicSelect.addEventListener("change", () => {
-      renderAdminSelect(editAdminSelect, editAdminClinicSelect.value);
+      renderAdminSelect(editAdminSelect, editAdminClinicSelect.value, { activeOnly: true });
     });
   }
 
   if (deactivateAdminClinicSelect) {
     deactivateAdminClinicSelect.addEventListener("change", () => {
-      renderAdminSelect(deactivateAdminSelect, deactivateAdminClinicSelect.value);
+      renderAdminSelect(deactivateAdminSelect, deactivateAdminClinicSelect.value, { activeOnly: true });
+    });
+  }
+
+  if (activateAdminClinicSelect) {
+    activateAdminClinicSelect.addEventListener("change", () => {
+      renderInactiveAdminSelect(
+        activateAdminSelect,
+        activateAdminClinicSelect.value
+      );
     });
   }
 
   function addAdminToStore(adminId, fullName, clinicId) {
     adminStore.set(String(adminId), {
       fullName,
-      clinicId
+      clinicId,
+      active: true
     });
 
-    renderAdminSelect(editAdminSelect, editAdminClinicSelect?.value || "");
-    renderAdminSelect(deactivateAdminSelect, deactivateAdminClinicSelect?.value || "");
+    renderAdminSelect(editAdminSelect, editAdminClinicSelect?.value || "", { activeOnly: true });
+    renderAdminSelect(deactivateAdminSelect, deactivateAdminClinicSelect?.value || "", { activeOnly: true });
+    renderInactiveAdminSelect(activateAdminSelect, activateAdminClinicSelect?.value || "");
   }
 
   function updateAdminInStore(adminId, fullName, clinicId) {
@@ -89,15 +122,9 @@ document.addEventListener("DOMContentLoaded", () => {
     adminStore.get(key).fullName = fullName;
     adminStore.get(key).clinicId = clinicId;
 
-    renderAdminSelect(editAdminSelect, editAdminClinicSelect?.value || "");
-    renderAdminSelect(deactivateAdminSelect, deactivateAdminClinicSelect?.value || "");
-  }
-
-  function removeAdminFromStore(adminId) {
-    adminStore.delete(String(adminId));
-
-    renderAdminSelect(editAdminSelect, editAdminClinicSelect?.value || "");
-    renderAdminSelect(deactivateAdminSelect, deactivateAdminClinicSelect?.value || "");
+    renderAdminSelect(editAdminSelect, editAdminClinicSelect?.value || "", { activeOnly: true });
+    renderAdminSelect(deactivateAdminSelect, deactivateAdminClinicSelect?.value || "", { activeOnly: true });
+    renderInactiveAdminSelect(activateAdminSelect, activateAdminClinicSelect?.value || "");
   }
 
   editAdminSelect.addEventListener("change", async () => {
@@ -168,6 +195,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (data.status === "success") {
         addAdminToStore(data.admin_id, fullName, clinicId);
+        editAdminClinicSelect.value = "";
+        deactivateAdminClinicSelect.value = "";
+        activateAdminClinicSelect.value = "";
+
         showPopupMessage("Адміністратора додано!", "success");
         addForm.reset();
       } else {
@@ -205,6 +236,8 @@ document.addEventListener("DOMContentLoaded", () => {
         updateAdminInStore(adminId, fullName, clinicId);
         showPopupMessage("Дані адміністратора оновлено!", "success");
         editForm.reset();
+        editAdminClinicSelect.value = "";
+        renderAdminSelect(editAdminSelect, "", { activeOnly: true });
       } else {
         showPopupMessage(data.message || "Помилка", "error");
       }
@@ -234,7 +267,16 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await res.json();
 
       if (data.status === "success") {
-        removeAdminFromStore(adminId);
+        adminStore.get(String(adminId)).active = false;
+
+        editAdminClinicSelect.value = "";
+        deactivateAdminClinicSelect.value = "";
+        activateAdminClinicSelect.value = "";
+
+        renderAdminSelect(editAdminSelect, "", { activeOnly: true });
+        renderAdminSelect(deactivateAdminSelect, "", { activeOnly: true });
+        renderInactiveAdminSelect(activateAdminSelect, activateAdminClinicSelect?.value || "");
+
         showPopupMessage("Адміністратора деактивовано", "success");
         deactivateForm.reset();
       } else {
@@ -245,17 +287,61 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  if (activateAdminForm) {
+    activateAdminForm.addEventListener("submit", async e => {
+      e.preventDefault();
+
+      const adminId = activateAdminSelect.value;
+      if (!adminId) {
+        showPopupMessage("Оберіть адміністратора", "error");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("action", "activate");
+      formData.append("admin_id", adminId);
+
+      try {
+        const res = await fetch("/BumbleCare/handlers/super_admin_manage_admins.php", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await res.json();
+
+        if (data.status === "success") {
+          adminStore.get(String(adminId)).active = true;
+
+          renderAdminSelect(editAdminSelect, editAdminClinicSelect?.value || "", { activeOnly: true });
+          renderAdminSelect(deactivateAdminSelect, deactivateAdminClinicSelect?.value || "", { activeOnly: true });
+          renderInactiveAdminSelect(
+            activateAdminSelect,
+            activateAdminClinicSelect?.value || ""
+          );
+
+          showPopupMessage("Адміністратора активовано", "success");
+          activateAdminForm.reset();
+        } else {
+          showPopupMessage(data.message || "Помилка", "error");
+        }
+      } catch {
+        showPopupMessage("Помилка зʼєднання з сервером", "error");
+      }
+    });
+  }
+
   // manage doctors
   const editDoctorSelect = document.getElementById("editDoctorSelect");
   const deactDoctorSelect = document.getElementById("deactivateDoctorSelect");
+  const activateDoctorSelect = document.getElementById("activateDoctorSelect");
 
   const doctorStore = new Map();
 
-  document.querySelectorAll("#editDoctorSelect option[data-clinic]").forEach(opt => {
+  document.querySelectorAll("#editDoctorSelect option[data-clinic], #activateDoctorSelect option[data-clinic]").forEach(opt => {
     doctorStore.set(opt.value, {
       fullName: opt.textContent,
       clinicId: opt.dataset.clinic,
-      active: true
+      active: opt.closest("#activateDoctorSelect") ? false : true
     });
   });
 
@@ -309,8 +395,27 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  function renderInactiveDoctorSelect(selectEl, clinicId) {
+    if (!selectEl) return;
+
+    selectEl.innerHTML = '<option value="" disabled selected hidden>Оберіть лікаря...</option>';
+
+    for (const [doctorId, doc] of doctorStore.entries()) {
+      if (doc.active) continue;
+      if (clinicId && String(doc.clinicId) !== String(clinicId)) continue;
+
+      const opt = document.createElement("option");
+      opt.value = doctorId;
+      opt.textContent = doc.fullName;
+      opt.dataset.clinic = doc.clinicId;
+
+      selectEl.appendChild(opt);
+    }
+  }
+
   const editClinicSelect = document.getElementById("editClinicSelect");
   const deactivateClinicSelect = document.getElementById("deactivateClinicSelect");
+  const activateClinicSelect = document.getElementById("activateClinicSelect");
 
   if (editClinicSelect) {
     editClinicSelect.addEventListener("change", () => {
@@ -332,9 +437,19 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  if (activateClinicSelect) {
+    activateClinicSelect.addEventListener("change", () => {
+      renderInactiveDoctorSelect(
+        activateDoctorSelect,
+        activateClinicSelect.value
+      );
+    });
+  }
+
   const addDoctorForm = document.getElementById("addDoctorForm");
   const editDoctorForm = document.getElementById("editDoctorForm");
   const deactivateDoctorForm = document.getElementById("deactivateDoctorForm");
+  const activateDoctorForm = document.getElementById("activateDoctorForm");
 
   if (editDoctorSelect) {
     editDoctorSelect.addEventListener("change", async () => {
@@ -456,6 +571,13 @@ document.addEventListener("DOMContentLoaded", () => {
           updateDoctorOption(doctorId, fullName);
           showPopupMessage("Дані лікаря оновлено", "success");
           editDoctorForm.reset();
+          editClinicSelect.value = "";
+          deactivateClinicSelect.value = "";
+          activateClinicSelect.value = "";
+
+          renderDoctorSelect(editDoctorSelect, "", { activeOnly: true });
+          renderDoctorSelect(deactDoctorSelect, "", { activeOnly: true });
+          renderInactiveDoctorSelect(activateDoctorSelect, "");
         } else {
           showPopupMessage(data.message || "Помилка редагування", "error");
         }
@@ -498,9 +620,58 @@ document.addEventListener("DOMContentLoaded", () => {
           deactivateClinicSelect.value = "";
           renderDoctorSelect(deactDoctorSelect, "", { activeOnly: true });
 
+          renderInactiveDoctorSelect(
+            activateDoctorSelect,
+            activateClinicSelect?.value || ""
+          );
+
           showPopupMessage("Лікаря деактивовано", "success");
         }
 
+      } catch {
+        showPopupMessage("Помилка зʼєднання з сервером", "error");
+      }
+    });
+  }
+
+  if (activateDoctorForm) {
+    activateDoctorForm.addEventListener("submit", async e => {
+      e.preventDefault();
+
+      const doctorId = activateDoctorForm.querySelector("[name='doctor_id']").value;
+      if (!doctorId) {
+        showPopupMessage("Оберіть лікаря", "error");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("action", "activate");
+      formData.append("doctor_id", doctorId);
+
+      try {
+        const res = await fetch("/BumbleCare/handlers/admin_manage_doctors.php", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await res.json();
+
+        if (data.status === "success") {
+          doctorStore.get(String(doctorId)).active = true;
+
+          renderDoctorSelect(editDoctorSelect, editClinicSelect?.value || "", { activeOnly: true });
+          renderDoctorSelect(deactDoctorSelect, deactivateClinicSelect?.value || "", { activeOnly: true });
+
+          renderInactiveDoctorSelect(
+            activateDoctorSelect,
+            activateClinicSelect?.value || ""
+          );
+
+          showPopupMessage("Лікаря активовано", "success");
+          activateDoctorForm.reset();
+        } else {
+          showPopupMessage(data.message || "Помилка", "error");
+        }
       } catch {
         showPopupMessage("Помилка зʼєднання з сервером", "error");
       }
@@ -612,21 +783,22 @@ document.addEventListener("DOMContentLoaded", () => {
   // manage patients
   const editPatientSelect = document.getElementById("editPatientSelect");
   const deactPatientSelect = document.getElementById("deactivatePatientSelect");
+  const activatePatientSelect = document.getElementById("activatePatientSelect");
 
   const addPatientForm = document.getElementById("addPatientForm");
   const editPatientForm = document.getElementById("editPatientForm");
   const deactivatePatientForm = document.getElementById("deactivatePatientForm");
+  const activatePatientForm = document.getElementById("activatePatientForm");
 
   const patientStore = new Map();
 
-  document
-    .querySelectorAll("#editPatientSelect option[value]")
+  document.querySelectorAll("#editPatientSelect option[value], #activatePatientSelect option[value]")
     .forEach(opt => {
       if (!opt.value) return;
 
       patientStore.set(opt.value, {
         fullName: opt.textContent,
-        active: true
+        active: opt.closest("#activatePatientSelect") ? false : true
       });
     });
 
@@ -646,6 +818,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  function renderInactivePatientSelect(selectEl) {
+    if (!selectEl) return;
+
+    selectEl.innerHTML = '<option value="" disabled selected hidden>Оберіть пацієнта...</option>';
+
+    for (const [patientId, patient] of patientStore.entries()) {
+      if (patient.active) continue;
+
+      const opt = document.createElement("option");
+      opt.value = patientId;
+      opt.textContent = patient.fullName;
+
+      selectEl.appendChild(opt);
+    }
+  }
+
   function addPatientToSelects(patientId, fullName) {
     patientStore.set(String(patientId), {
       fullName,
@@ -654,6 +842,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     renderPatientSelect(editPatientSelect, { activeOnly: true });
     renderPatientSelect(deactPatientSelect, { activeOnly: true });
+    renderInactivePatientSelect(activatePatientSelect);
   }
 
   function updatePatientOption(patientId, fullName) {
@@ -674,6 +863,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     renderPatientSelect(editPatientSelect, { activeOnly: true });
     renderPatientSelect(deactPatientSelect, { activeOnly: true });
+    renderInactivePatientSelect(activatePatientSelect);
   }
 
   if (editPatientSelect) {
@@ -825,11 +1015,54 @@ document.addEventListener("DOMContentLoaded", () => {
           deactivatePatientInStore(patientId);
           showPopupMessage("Пацієнта деактивовано", "success");
           deactivatePatientForm.reset();
+          editPatientSelect.value = "";
+          deactPatientSelect.value = "";
         } else {
           showPopupMessage(data.message || "Помилка", "error");
         }
       } catch {
         showPopupMessage("Помилка зʼєднання з сервером", "error");
+      }
+    });
+  }
+
+  if (activatePatientForm) {
+    activatePatientForm.addEventListener("submit", async e => {
+      e.preventDefault();
+
+      const patientId = activatePatientSelect.value;
+      if (!patientId) {
+        showPopupMessage("Оберіть пацієнта", "error");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("action", "activate");
+      formData.append("patient_id", patientId);
+
+      try {
+        const res = await fetch("/BumbleCare/handlers/super_admin_manage_patients.php", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await res.json();
+
+        if (data.status === "success") {
+          patientStore.get(String(patientId)).active = true;
+
+          renderPatientSelect(editPatientSelect, { activeOnly: true });
+          renderPatientSelect(deactPatientSelect, { activeOnly: true });
+          renderInactivePatientSelect(activatePatientSelect);
+
+          showPopupMessage("Пацієнта активовано", "success");
+          activatePatientForm.reset();
+          activatePatientSelect.value = "";
+        } else {
+          showPopupMessage(data.message || "Помилка", "error");
+        }
+      } catch {
+        showPopupMessage("Помилка зʼєднання", "error");
       }
     });
   }

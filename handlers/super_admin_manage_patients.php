@@ -231,5 +231,38 @@ if ($action === 'deactivate') {
   exit;
 }
 
+if ($action === 'activate') {
+  $patient_id = $_POST['patient_id'] ?? null;
+
+  if (!$patient_id || !patientExists($pdo, $patient_id)) {
+    echo json_encode(['status' => 'error', 'message' => 'Пацієнта не знайдено']);
+    exit;
+  }
+
+  $stmt = $pdo->prepare("
+    SELECT u.user_id, u.status
+    FROM patients p
+    JOIN users u ON p.user_id = u.user_id
+    WHERE p.patient_id = ?
+  ");
+  $stmt->execute([$patient_id]);
+  $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+  if ($row['status'] !== 'inactive') {
+    echo json_encode(['status' => 'error', 'message' => 'Пацієнт вже активний']);
+    exit;
+  }
+
+  $stmt = $pdo->prepare("
+    UPDATE users
+    SET status = 'active'
+    WHERE user_id = ?
+  ");
+  $stmt->execute([$row['user_id']]);
+
+  echo json_encode(['status' => 'success', 'message' => 'Пацієнта активовано']);
+  exit;
+}
+
 echo json_encode(['status' => 'error', 'message' => 'Unknown action']);
 exit;

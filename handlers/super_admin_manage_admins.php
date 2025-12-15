@@ -227,5 +227,43 @@ if ($action === 'deactivate') {
   exit;
 }
 
+if ($action === 'activate') {
+  $admin_id = $_POST['admin_id'] ?? null;
+
+  if (!$admin_id || !adminExists($pdo, $admin_id)) {
+    echo json_encode(['status' => 'error', 'message' => 'Адміністратора не знайдено']);
+    exit;
+  }
+
+  $stmt = $pdo->prepare("
+    SELECT u.user_id, u.status
+    FROM clinic_admins ca
+    JOIN users u ON ca.user_id = u.user_id
+    WHERE ca.admin_id = ?
+  ");
+  $stmt->execute([$admin_id]);
+  $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+  if (!$row) {
+    echo json_encode(['status' => 'error', 'message' => 'Помилка користувача']);
+    exit;
+  }
+
+  if ($row['status'] === 'active') {
+    echo json_encode(['status' => 'error', 'message' => 'Адміністратор вже активний']);
+    exit;
+  }
+
+  $stmt = $pdo->prepare("
+    UPDATE users
+    SET status = 'active'
+    WHERE user_id = ?
+  ");
+  $stmt->execute([$row['user_id']]);
+
+  echo json_encode(['status' => 'success', 'message' => 'Адміністратора активовано']);
+  exit;
+}
+
 echo json_encode(['status' => 'error', 'message' => 'Unknown action']);
 exit;

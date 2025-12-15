@@ -2,9 +2,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const addForm = document.getElementById("addDoctorForm");
   const editForm = document.getElementById("editDoctorForm");
   const deactivateForm = document.getElementById("deactivateDoctorForm");
+  const activateForm = document.getElementById("activateDoctorForm");
 
-  const editSelect = editForm.querySelector("select[name='doctor_id']");
+  const editSelect = editForm?.querySelector("select[name='doctor_id']");
   const deactivateSelect = deactivateForm.querySelector("select[name='doctor_id']");
+  const activateSelect = activateForm?.querySelector("select[name='doctor_id']");
 
 	const tabs = document.querySelectorAll(".tabs .tab");
 	const contents = document.querySelectorAll(".tab-content");
@@ -14,9 +16,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const inputs = clinicForm ? clinicForm.querySelectorAll("input, textarea") : null;
   const dayInput     = document.getElementById("dayInput");
 
-  dayInput.addEventListener("click", () => {
-    dayInput.showPicker(); 
-  });
+  if (dayInput) {
+    dayInput.addEventListener("click", () => {
+      dayInput.showPicker();
+    });
+  }
 
   const savedTab = sessionStorage.getItem('activeClinicTab');
   if (savedTab) {
@@ -56,25 +60,69 @@ document.addEventListener("DOMContentLoaded", () => {
 
     editSelect.appendChild(editOption);
     deactivateSelect.appendChild(deactOption);
+
+    if (activateSelect) {
+      const actOpt = activateSelect.querySelector(`option[value="${doctorId}"]`);
+      if (actOpt) actOpt.remove();
+    }
   }
 
   function updateDoctorOption(doctorId, fullName, specialty = "") {
     const textEdit = specialty ? `${fullName} (${specialty})` : fullName;
-    const textDeact = fullName;
 
     const editOpt = editSelect.querySelector(`option[value="${doctorId}"]`);
     if (editOpt) editOpt.textContent = textEdit;
 
     const deactOpt = deactivateSelect.querySelector(`option[value="${doctorId}"]`);
-    if (deactOpt) deactOpt.textContent = textDeact;
+    if (deactOpt) deactOpt.textContent = fullName;
+
+    const actOpt = activateSelect?.querySelector(`option[value="${doctorId}"]`);
+    if (actOpt) actOpt.textContent = fullName;
   }
 
-  function removeDoctorFromSelects(doctorId) {
-    const opt1 = editSelect.querySelector(`option[value="${doctorId}"]`);
-    if (opt1) opt1.remove();
+  function moveDoctorToActivateSelect(doctorId) {
+    const editOpt = editSelect.querySelector(`option[value="${doctorId}"]`);
+    const deactOpt = deactivateSelect.querySelector(`option[value="${doctorId}"]`);
 
-    const opt2 = deactivateSelect.querySelector(`option[value="${doctorId}"]`);
-    if (opt2) opt2.remove();
+    let fullName = "";
+    if (deactOpt) fullName = deactOpt.textContent;
+    if (!fullName && editOpt) fullName = editOpt.textContent;
+
+    if (editOpt) editOpt.remove();
+    if (deactOpt) deactOpt.remove();
+
+    if (activateSelect && doctorId) {
+      const existing = activateSelect.querySelector(`option[value="${doctorId}"]`);
+      if (!existing) {
+        const opt = document.createElement("option");
+        opt.value = doctorId;
+        opt.textContent = fullName || `ID ${doctorId}`;
+        activateSelect.appendChild(opt);
+      }
+    }
+  }
+
+  function moveDoctorToActiveSelects(doctorId, fullName, specialty = "") {
+    if (activateSelect) {
+      const actOpt = activateSelect.querySelector(`option[value="${doctorId}"]`);
+      if (actOpt) actOpt.remove();
+    }
+
+    const existsEdit = editSelect.querySelector(`option[value="${doctorId}"]`);
+    if (!existsEdit) {
+      const opt = document.createElement("option");
+      opt.value = doctorId;
+      opt.textContent = specialty ? `${fullName} (${specialty})` : fullName;
+      editSelect.appendChild(opt);
+    }
+
+    const existsDeact = deactivateSelect.querySelector(`option[value="${doctorId}"]`);
+    if (!existsDeact) {
+      const opt = document.createElement("option");
+      opt.value = doctorId;
+      opt.textContent = specialty ? `${fullName} (${specialty})` : fullName;
+      deactivateSelect.appendChild(opt);
+    }
   }
 
   editSelect.addEventListener("change", async () => {
@@ -216,7 +264,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (data.status === "success") {
 
-        removeDoctorFromSelects(doctor_id);
+        moveDoctorToActivateSelect(doctor_id);
 
         showPopupMessage(data.message, "success");
         deactivateForm.reset();
@@ -229,6 +277,44 @@ document.addEventListener("DOMContentLoaded", () => {
       showPopupMessage("Помилка зʼєднання з сервером", "error");
     }
   });
+
+  if (activateForm) {
+    activateForm.addEventListener("submit", async e => {
+      e.preventDefault();
+
+      const doctor_id = activateSelect.value;
+      if (!doctor_id) {
+        showPopupMessage("Оберіть лікаря", "error");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("action", "activate");
+      formData.append("doctor_id", doctor_id);
+
+      try {
+        const res = await fetch("/BumbleCare/handlers/admin_manage_doctors.php", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await res.json();
+
+        if (data.status === "success") {
+          const fullName = data.full_name || "Лікар";
+          const specialty = data.specialty || "";
+          moveDoctorToActiveSelects(doctor_id, fullName, specialty);
+
+          showPopupMessage(data.message || "Лікаря активовано", "success");
+          activateForm.reset();
+        } else {
+          showPopupMessage(data.message || "Помилка", "error");
+        }
+      } catch {
+        showPopupMessage("Помилка зʼєднання з сервером", "error");
+      }
+    });
+  }
 
   if (clinicForm && btn) {
     btn.addEventListener("click", async () => {
