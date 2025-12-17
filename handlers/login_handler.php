@@ -36,33 +36,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-		// if ($user['role'] === 'clinic_admin' || $user['role'] === 'super_admin') {
-		// 		$code = random_int(100000, 999999);
-		// 		$codeHash = password_hash($code, PASSWORD_DEFAULT);
+		if ($user['role'] === 'clinic_admin' || $user['role'] === 'super_admin') {
+				$code = random_int(100000, 999999);
+				$codeHash = password_hash($code, PASSWORD_DEFAULT);
 
-		// 		$expires = (new DateTime('now', new DateTimeZone('Europe/Kyiv')))
-		// 			->add(new DateInterval('PT5M'))
-		// 			->format('Y-m-d H:i:s');
+				$expires = (new DateTime('now', new DateTimeZone('Europe/Kyiv')))
+					->add(new DateInterval('PT5M'))
+					->format('Y-m-d H:i:s');
 
-		// 		$stmt2 = $pdo->prepare("
-		// 				INSERT INTO two_factor_codes (user_id, code, expires_at)
-		// 				VALUES (?, ?, ?)
-		// 		");
-		// 		$stmt2->execute([$user['user_id'], $codeHash, $expires]);
+				$stmt2 = $pdo->prepare("
+						INSERT INTO two_factor_codes (user_id, code, expires_at)
+						VALUES (?, ?, ?)
+				");
+				$stmt2->execute([$user['user_id'], $codeHash, $expires]);
 
-		// 		require_once __DIR__ . '/../includes/send_mail.php';
-		// 		sendEmail(
-		// 				$user['email'],
-		// 				$user['full_name'] ?? $user['email'],
-		// 				"Ваш код підтвердження входу | BumbleCare",
-		// 				"<p>Ваш код підтвердження: <b>{$code}</b></p><p>Дійсний 5 хвилин.</p>"
-		// 		);
+				require_once __DIR__ . '/../includes/send_mail.php';
+				sendEmail(
+						$user['email'],
+						$user['full_name'] ?? $user['email'],
+						"Ваш код підтвердження входу | BumbleCare",
+						"<p>Ваш код підтвердження: <b>{$code}</b></p><p>Дійсний 5 хвилин.</p>"
+				);
 
-		// 		$_SESSION['2fa_user_id'] = $user['user_id'];
+				$_SESSION['2fa_user_id'] = $user['user_id'];
 
-		// 		header("Location: /BumbleCare/pages/verify_2fa.php");
-		// 		exit;
-		// }
+				header("Location: /BumbleCare/pages/verify_2fa.php");
+				exit;
+		}
 
     $token = generate_jwt([
         'user_id' => (int)$user['user_id'],

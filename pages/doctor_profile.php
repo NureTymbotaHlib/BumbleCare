@@ -100,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image']) && 
             
             <p class="profile-detail">
               <strong>Спеціальність:</strong>
-              <?= htmlspecialchars($doctor['specialty'] ?? '—') ?>
+              <span id="headerSpecialty"><?= htmlspecialchars($doctor['specialty'] ?? '—') ?></span>
             </p>
 
             <p class="profile-detail">
@@ -117,16 +117,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image']) && 
         </div>
       </div>
 
-      <?php
-        $clinics = [];
-        try {
-          $stmt = $pdo->query("SELECT clinic_id, name FROM clinics ORDER BY name ASC");
-          $clinics = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (Exception $e) {
-          $clinics = [];
-        }
-        ?>
-
         <form class="doctor-info-form">
           <div class="form-grid">
 
@@ -137,15 +127,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image']) && 
 
             <div class="form-group">
               <label>Клініка</label>
-              <select name="clinic_id" disabled>
-                <option value=""></option>
-                <?php foreach ($clinics as $clinic): ?>
-                  <option value="<?= $clinic['clinic_id'] ?>"
-                    <?= ($doctor['clinic_id'] ?? null) == $clinic['clinic_id'] ? 'selected' : '' ?>>
-                    <?= htmlspecialchars($clinic['name']) ?>
-                  </option>
-                <?php endforeach; ?>
-              </select>
+              <input
+                type="text"
+                name="clinic_name"
+                value="<?= htmlspecialchars($doctor['clinic_name'] ?? '—') ?>"
+                disabled
+              >
             </div>
 
             <div class="form-group">

@@ -10,7 +10,6 @@ if ($user_role !== 'doctor') {
 }
 
 $fields = [
-    'clinic_id' => isset($_POST['clinic_id']) && $_POST['clinic_id'] !== '' ? (int)$_POST['clinic_id'] : null,
     'specialty' => trim($_POST['specialty'] ?? ''),
     'date_of_birth' => trim($_POST['date_of_birth'] ?? ''),
     'phone_number' => trim($_POST['phone_number'] ?? ''),
@@ -66,7 +65,6 @@ try {
     if ($exists) {
         $stmt = $pdo->prepare("
             UPDATE doctors SET
-                clinic_id = ?,
                 specialty = ?,
                 experience_years = ?,
                 certification = ?,
@@ -78,7 +76,6 @@ try {
             WHERE user_id = ?
         ");
         $stmt->execute([
-            $fields['clinic_id'],
             $fields['specialty'],
             $fields['experience_years'],
             $fields['certification'],
@@ -91,23 +88,12 @@ try {
         ]);
 
     } else {
-        $stmt = $pdo->prepare("
-            INSERT INTO doctors
-                (user_id, clinic_id, specialty, experience_years, certification, education, gender, date_of_birth, id_code, about)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ");
-        $stmt->execute([
-            $user_id,
-            $fields['clinic_id'],
-            $fields['specialty'],
-            $fields['experience_years'],
-            $fields['certification'],
-            $fields['education'],
-            $fields['gender'],
-            $fields['date_of_birth'],
-            $fields['id_code'],
-            $fields['about']
+        $pdo->rollBack();
+        echo json_encode([
+            'success' => false,
+            'error' => 'Профіль лікаря не ініціалізовано. Зверніться до адміністратора клініки.'
         ]);
+        exit;
     }
 
     $pdo->commit();

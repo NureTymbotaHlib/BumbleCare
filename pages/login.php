@@ -50,22 +50,12 @@
 
         <button type="submit" class="btn-login-main">Увійти</button>
 
-        <div class="social-login">
-          <button type="button" class="btn-social google">
-            <img src="/BumbleCare/assets/images/google-icon.png" alt="Google"> Увійти з Google
-          </button>
-          <button type="button" class="btn-social facebook">
-            <img src="/BumbleCare/assets/images/facebook-icon.png" alt="Facebook"> Увійти з FaceBook
-          </button>
-        </div>
-
         <p class="register-hint">
           Новий тут? <a href="/BumbleCare/pages/register.php">Зареєструйся тут</a>
         </p>
 
       </form>
 
-      <!-- POPUP ВІДНОВЛЕННЯ ПАРОЛЮ -->
       <div id="resetModal" class="modal hidden">
         <div class="modal-content">
           <span class="close-btn">&times;</span>

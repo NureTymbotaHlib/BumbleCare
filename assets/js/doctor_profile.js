@@ -17,7 +17,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (
           i.name !== "full_name" &&
           i.name !== "email" &&
-          i.name !== "age"
+          i.name !== "age" &&
+          i.name !== "clinic_name"
         ) {
           i.disabled = false;
         }
@@ -35,6 +36,11 @@ document.addEventListener("DOMContentLoaded", () => {
           if (data.success) {
             inputs.forEach(i => (originalValues[i.name] = i.value));
             resetEditState();
+            const headerSpecialty = document.getElementById("headerSpecialty");
+            const specialtyInput = form.querySelector('input[name="specialty"]');
+            if (headerSpecialty && specialtyInput) {
+              headerSpecialty.textContent = specialtyInput.value.trim() || "—";
+            }
             showPopupMessage("Дані успішно збережено!", "success");
           } else {
             showPopupMessage(data.error || "Помилка збереження", "error");
